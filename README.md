@@ -1,5 +1,5 @@
 # AlumniManagementSystem
-校友管理系统
+校友管理系统 后端 ams-backend
 - 2023/4/16
 
 >- Java version: 1.8.0_201
