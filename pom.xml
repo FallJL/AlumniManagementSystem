@@ -14,6 +14,10 @@
 	<modules>
 		<module>ams-basic</module>
 		<module>renren-fast</module>
+		<module>renren-generator</module>
+		<module>springboot-mybatisplus</module>
+		<module>ams-common</module>
+		<module>ams-common</module>
 	</modules>
 
 </project>

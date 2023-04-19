@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.scu.ams.basic.dao.DonationDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.scu.ams.basic.entity.DonationEntity" id="donationMap">
+        <result property="id" column="id"/>
+        <result property="donationTitle" column="donation_title"/>
+        <result property="donationContent" column="donation_content"/>
+        <result property="donationDemand" column="donation_demand"/>
+        <result property="donationStatus" column="donation_status"/>
+        <result property="donationReleaseTime" column="donation_release_time"/>
+        <result property="donationUpdateTime" column="donation_update_time"/>
+    </resultMap>
+
+
+</mapper>
