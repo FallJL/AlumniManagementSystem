@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.scu.ams.basic.dao.NotificationDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.scu.ams.basic.entity.NotificationEntity" id="notificationMap">
+        <result property="id" column="id"/>
+        <result property="notifTitle" column="notif_title"/>
+        <result property="notifContent" column="notif_content"/>
+        <result property="notifStatus" column="notif_status"/>
+        <result property="notifCreateTime" column="notif_create_time"/>
+        <result property="notifUpdateTime" column="notif_update_time"/>
+    </resultMap>
+
+
+</mapper>

@@ -237,7 +237,12 @@
 			<artifactId>lombok</artifactId>
 			<version>${lombok.version}</version>
 		</dependency>
-	</dependencies>
+<!--        <dependency>-->
+<!--            <groupId>com.scu</groupId>-->
+<!--            <artifactId>ams-common</artifactId>-->
+<!--            <version>0.0.1-SNAPSHOT</version>-->
+<!--        </dependency>-->
+    </dependencies>
 
 	<build>
 		<finalName>${project.artifactId}</finalName>
