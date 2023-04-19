@@ -5,6 +5,8 @@ import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,12 +27,24 @@ import com.scu.common.utils.R;
  * @email 1796899275@qq.com
  * @date 2023-04-18 14:01:11
  */
+@RefreshScope
 @RestController
 @RequestMapping("basic/alumnusbasic")
 public class AlumnusBasicController {
     @Autowired
     private AlumnusBasicService alumnusBasicService;
 
+    /*
+    * 测试nacos配置
+    **/
+    @Value("${basic.name}")
+    private String name;
+    @Value("${basic.age}")
+    private Integer age;
+    @RequestMapping("/test")
+    public R test(){
+        return R.ok().put("name",name).put("age",age);
+    }
     /**
      * 列表
      */

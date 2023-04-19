@@ -11,3 +11,6 @@ ams-basic模块
 
 ams-common模块
 >- 每一个微服务公共的依赖，bean，工具类
+
+ams-gateway
+>- 网关服务
