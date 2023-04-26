@@ -17,7 +17,7 @@
 		<module>renren-generator</module>
 		<module>springboot-mybatisplus</module>
 		<module>ams-common</module>
-		<module>ams-common</module>
+		<module>ams-gateway</module>
 	</modules>
 
 </project>

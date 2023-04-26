@@ -23,7 +23,7 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.scu</groupId>
+			<groupId>com.scu.ams</groupId>
 			<artifactId>ams-common</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
