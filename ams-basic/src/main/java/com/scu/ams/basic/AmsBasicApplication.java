@@ -7,7 +7,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @EnableDiscoveryClient
 @SpringBootApplication
-@MapperScan("com/scu/ams/basic/dao")
+@MapperScan("com.scu.ams.basic.dao")
 public class AmsBasicApplication {
 
 	public static void main(String[] args) {

@@ -17,8 +17,9 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
-
 server:
   port: 8000
-
+logging:
+  level:
+    com.scu.ams: debug
 

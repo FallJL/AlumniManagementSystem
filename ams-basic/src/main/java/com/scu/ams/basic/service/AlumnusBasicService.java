@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.scu.common.utils.PageUtils;
 import com.scu.ams.basic.entity.AlumnusBasicEntity;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,5 +17,7 @@ import java.util.Map;
 public interface AlumnusBasicService extends IService<AlumnusBasicEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    PageUtils listRandom(Map<String, Object> params);
 }
 
