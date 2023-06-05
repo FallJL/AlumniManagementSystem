@@ -1,9 +1,11 @@
 package com.scu.ams.basic.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.scu.common.utils.PageUtils;
 import com.scu.ams.basic.entity.AlumnusBasicEntity;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,5 +18,13 @@ import java.util.Map;
 public interface AlumnusBasicService extends IService<AlumnusBasicEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    List<AlumnusBasicEntity> alumniDataView(AlumnusBasicEntity alumnusBasicEntity);
+
+    void sendBirthDayMail(List<AlumnusBasicEntity> alumnusBasicEntityList);
+
+    void sendInformMail(List<AlumnusBasicEntity> alumnusBasicEntityList, String information);
+
+    PageUtils queryPageWrapper(AlumnusBasicEntity alumnusBasicEntity);
 }
 

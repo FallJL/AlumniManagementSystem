@@ -43,6 +43,9 @@
         <result property="password" column="password"/>
         <result property="createTime" column="create_time"/>
     </resultMap>
+    <select id="alumniDataView" resultType="com.scu.ams.basic.entity.AlumnusBasicEntity">
+
+    </select>
 
 
 </mapper>

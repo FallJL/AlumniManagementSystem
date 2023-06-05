@@ -1,9 +1,13 @@
 package com.scu.ams.basic.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.service.additional.query.impl.QueryChainWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -33,7 +37,6 @@ import com.scu.common.utils.R;
 public class AlumnusBasicController {
     @Autowired
     private AlumnusBasicService alumnusBasicService;
-
     /*
     * 测试nacos配置
     **/
@@ -52,7 +55,6 @@ public class AlumnusBasicController {
     //@RequiresPermissions("basic:alumnusbasic:list")
     public R list(@RequestParam Map<String, Object> params){
         PageUtils page = alumnusBasicService.queryPage(params);
-
         return R.ok().put("page", page);
     }
 
@@ -99,6 +101,21 @@ public class AlumnusBasicController {
 		alumnusBasicService.removeByIds(Arrays.asList(ids));
 
         return R.ok();
+    }
+    /*
+    * 校友数据看板
+    **/
+    @RequestMapping("/alumniDataView")
+    public R alumniDataView(@RequestBody AlumnusBasicEntity alumnusBasicEntity) {
+        List<AlumnusBasicEntity> resultList = alumnusBasicService.alumniDataView(alumnusBasicEntity);
+        return R.ok().put("resultList", resultList);
+    }
+
+    @RequestMapping("/testPage")
+    public R list(@RequestBody AlumnusBasicEntity alumnusBasicEntity) {
+        PageUtils page = alumnusBasicService.queryPageWrapper(alumnusBasicEntity);
+
+        return R.ok().put("page", page);
     }
 
 }
