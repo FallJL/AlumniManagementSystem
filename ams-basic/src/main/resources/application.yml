@@ -34,7 +34,6 @@ mybatis-plus:
     db-config:
       id-type: auto
 
-
 server:
   port: 8000
 logging:

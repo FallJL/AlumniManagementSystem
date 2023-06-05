@@ -1,6 +1,7 @@
 package com.scu.ams.basic.controller;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,9 +9,14 @@ import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.service.additional.query.impl.QueryChainWrapper;
+import com.baomidou.mybatisplus.core.injector.methods.Update;
+import com.scu.common.valid.AddGroup;
+import com.scu.common.valid.UpdateGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +28,7 @@ import com.scu.ams.basic.service.AlumnusBasicService;
 import com.scu.common.utils.PageUtils;
 import com.scu.common.utils.R;
 
+import javax.validation.Valid;
 
 
 /**
@@ -55,9 +62,20 @@ public class AlumnusBasicController {
     //@RequiresPermissions("basic:alumnusbasic:list")
     public R list(@RequestParam Map<String, Object> params){
         PageUtils page = alumnusBasicService.queryPage(params);
+
         return R.ok().put("page", page);
     }
 
+    /**
+     * 校友抽样（根据给定条件，随机抽样）
+     */
+    @RequestMapping("/list/random")
+    //@RequiresPermissions("basic:alumnusbasic:list")
+    public R listRandom(@RequestParam Map<String, Object> params){
+        PageUtils page = alumnusBasicService.listRandom(params);
+
+        return R.ok().put("page", page);
+    }
 
     /**
      * 信息
@@ -75,8 +93,23 @@ public class AlumnusBasicController {
      */
     @RequestMapping("/save")
     //@RequiresPermissions("basic:alumnusbasic:save")
-    public R save(@RequestBody AlumnusBasicEntity alumnusBasic){
-		alumnusBasicService.save(alumnusBasic);
+    public R save(@Validated({AddGroup.class}) @RequestBody AlumnusBasicEntity alumnusBasic /*, BindingResult result */){
+//		if(result.hasErrors()){
+//            Map<String, String> map = new HashMap<>();
+//            // FieldError
+//            result.getFieldErrors().forEach((item) -> {
+//                // 1.获取错误信息
+//                String message = item.getDefaultMessage();
+//                // 2.获取错误的属性名
+//                String field = item.getField();
+//                map.put(field, message);
+//            });
+//            return R.error(400, "提交的数据不合法").put("data", map);
+//        } else {
+//            alumnusBasicService.save(alumnusBasic);
+//        }
+
+        alumnusBasicService.save(alumnusBasic);
 
         return R.ok();
     }
@@ -86,7 +119,7 @@ public class AlumnusBasicController {
      */
     @RequestMapping("/update")
     //@RequiresPermissions("basic:alumnusbasic:update")
-    public R update(@RequestBody AlumnusBasicEntity alumnusBasic){
+    public R update(@Validated({UpdateGroup.class}) @RequestBody AlumnusBasicEntity alumnusBasic){
 		alumnusBasicService.updateById(alumnusBasic);
 
         return R.ok();

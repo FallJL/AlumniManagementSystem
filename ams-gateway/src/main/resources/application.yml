@@ -11,6 +11,13 @@ spring:
           predicates:
             - Query=url,qq
 
+        - id: basic_route
+          uri: lb://ams-basic
+          predicates:
+            - Path=/api/basic/**
+          filters:
+            - RewritePath=/api/(?<segment>.*), /$\{segment}
+
         - id: admin_route
           uri: lb://renren-fast
           predicates:

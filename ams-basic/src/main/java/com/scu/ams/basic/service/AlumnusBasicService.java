@@ -26,5 +26,7 @@ public interface AlumnusBasicService extends IService<AlumnusBasicEntity> {
     void sendInformMail(List<AlumnusBasicEntity> alumnusBasicEntityList, String information);
 
     PageUtils queryPageWrapper(AlumnusBasicEntity alumnusBasicEntity);
+
+    PageUtils listRandom(Map<String, Object> params);
 }
 

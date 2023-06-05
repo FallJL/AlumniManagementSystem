@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import lombok.val;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ import com.scu.common.utils.Query;
 import com.scu.ams.basic.dao.AlumnusBasicDao;
 import com.scu.ams.basic.entity.AlumnusBasicEntity;
 import com.scu.ams.basic.service.AlumnusBasicService;
+import org.springframework.util.StringUtils;
 
 
 @Service("alumnusBasicService")
@@ -28,11 +31,28 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
     private JavaMailSender javaMailSender;
     @Autowired
     private AlumnusBasicDao alumnusBasicDao;
+//    @Override
+//    public PageUtils queryPage(Map<String, Object> params) {
+//        IPage<AlumnusBasicEntity> page = this.page(
+//                new Query<AlumnusBasicEntity>().getPage(params),
+//                new QueryWrapper<AlumnusBasicEntity>()
+//        );
+//
+//        return new PageUtils(page);
+//    }
+
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
+        // 如果key不为空，则需要进行模糊匹配，用wrapper即可
+        String key = (String) params.get("key");
+        LambdaQueryWrapper<AlumnusBasicEntity> wrapper = new LambdaQueryWrapper<>();
+        if(!StringUtils.isEmpty(key)){
+            wrapper.like(AlumnusBasicEntity::getAluId, key).or().like(AlumnusBasicEntity::getAluName, key);
+        }
+
         IPage<AlumnusBasicEntity> page = this.page(
                 new Query<AlumnusBasicEntity>().getPage(params),
-                new QueryWrapper<AlumnusBasicEntity>()
+                wrapper
         );
 
         return new PageUtils(page);
@@ -115,6 +135,21 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
         page.setTotal(resultList.size());
 
         // 返回PageUtils对象，将查询结果和分页信息进行封装
+        return new PageUtils(page);
+    }
+
+    @Override
+    public PageUtils listRandom(Map<String, Object> params) {
+        QueryWrapper<AlumnusBasicEntity> wrapper = new QueryWrapper<>();
+        // wrapper.like("aluId", params.get("aluId") + "%");
+        wrapper.orderByAsc("RAND()");
+        // wrapper.last("LIMIT " + params.get("number"));
+        // wrapper.last("LIMIT 10");
+        // List<AlumnusBasicEntity> list = baseMapper.selectList(wrapper);
+        IPage<AlumnusBasicEntity> page = this.page(
+                new Query<AlumnusBasicEntity>().getPage(params),
+                wrapper
+        );
         return new PageUtils(page);
     }
 
