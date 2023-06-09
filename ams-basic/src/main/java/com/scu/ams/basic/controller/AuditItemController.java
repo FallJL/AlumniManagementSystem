@@ -11,33 +11,33 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.scu.ams.basic.entity.HomeImgEntity;
-import com.scu.ams.basic.service.HomeImgService;
+import com.scu.ams.basic.entity.AuditItemEntity;
+import com.scu.ams.basic.service.AuditItemService;
 import com.scu.common.utils.PageUtils;
 import com.scu.common.utils.R;
 
 
 
 /**
- * 首页图片的信息
+ * 审核项的基本信息
  *
- * @author wanghuan
- * @email 1796899275@qq.com
- * @date 2023-04-18 14:01:11
+ * @author rjl
+ * @email 190276434@qq.com
+ * @date 2023-06-08 17:52:38
  */
 @RestController
-@RequestMapping("basic/homeimg")
-public class HomeImgController {
+@RequestMapping("basic/audititem")
+public class AuditItemController {
     @Autowired
-    private HomeImgService homeImgService;
+    private AuditItemService auditItemService;
 
     /**
      * 列表
      */
     @RequestMapping("/list")
-    //@RequiresPermissions("basic:homeimg:list")
+    //@RequiresPermissions("basic:audititem:list")
     public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = homeImgService.queryPage(params);
+        PageUtils page = auditItemService.queryPage(params);
 
         return R.ok().put("page", page);
     }
@@ -47,20 +47,20 @@ public class HomeImgController {
      * 信息
      */
     @RequestMapping("/info/{id}")
-    //@RequiresPermissions("basic:homeimg:info")
+    //@RequiresPermissions("basic:audititem:info")
     public R info(@PathVariable("id") Long id){
-		HomeImgEntity homeImg = homeImgService.getById(id);
+		AuditItemEntity auditItem = auditItemService.getById(id);
 
-        return R.ok().put("homeImg", homeImg);
+        return R.ok().put("auditItem", auditItem);
     }
 
     /**
      * 保存
      */
     @RequestMapping("/save")
-    //@RequiresPermissions("basic:homeimg:save")
-    public R save(@RequestBody HomeImgEntity homeImg){
-		homeImgService.save(homeImg);
+    //@RequiresPermissions("basic:audititem:save")
+    public R save(@RequestBody AuditItemEntity auditItem){
+		auditItemService.save(auditItem);
 
         return R.ok();
     }
@@ -69,9 +69,9 @@ public class HomeImgController {
      * 修改
      */
     @RequestMapping("/update")
-    //@RequiresPermissions("basic:homeimg:update")
-    public R update(@RequestBody HomeImgEntity homeImg){
-		homeImgService.updateById(homeImg);
+    //@RequiresPermissions("basic:audititem:update")
+    public R update(@RequestBody AuditItemEntity auditItem){
+		auditItemService.updateById(auditItem);
 
         return R.ok();
     }
@@ -80,9 +80,9 @@ public class HomeImgController {
      * 删除
      */
     @RequestMapping("/delete")
-    //@RequiresPermissions("basic:homeimg:delete")
+    //@RequiresPermissions("basic:audititem:delete")
     public R delete(@RequestBody Long[] ids){
-		homeImgService.removeByIds(Arrays.asList(ids));
+		auditItemService.removeByIds(Arrays.asList(ids));
 
         return R.ok();
     }

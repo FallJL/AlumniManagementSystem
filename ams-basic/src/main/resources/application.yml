@@ -28,6 +28,9 @@ spring:
             enable: true
             required: true
           socketFactory.class: javax.net.ssl.SSLSocketFactory
+  jackson:
+    date-format: yyyy-MM-dd
+    time-zone: GMT+8
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
   global-config:
@@ -40,3 +43,5 @@ logging:
   level:
     com.scu.ams.basic: debug
 
+    com.scu.ams: debug
+file-upload-path: ./ams-basic/src/main/java/com/scu/ams/basic/file

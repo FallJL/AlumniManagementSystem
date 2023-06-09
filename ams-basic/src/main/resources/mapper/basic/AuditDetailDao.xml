@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.scu.ams.basic.dao.AuditDetailDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.scu.ams.basic.entity.AuditDetailEntity" id="auditDetailMap">
+        <result property="id" column="id"/>
+        <result property="auditId" column="audit_id"/>
+        <result property="aluName" column="alu_name"/>
+        <result property="aluId" column="alu_id"/>
+        <result property="gender" column="gender"/>
+        <result property="idCard" column="id_card"/>
+        <result property="nationality" column="nationality"/>
+        <result property="politicalStatus" column="political_status"/>
+        <result property="email" column="email"/>
+        <result property="nativePlace" column="native_place"/>
+        <result property="clazz" column="clazz"/>
+        <result property="admissionTime" column="admission_time"/>
+        <result property="graduationTime" column="graduation_time"/>
+        <result property="major" column="major"/>
+        <result property="degreeStage" column="degree_stage"/>
+        <result property="phoneNum" column="phone_num"/>
+        <result property="city" column="city"/>
+        <result property="workUnit" column="work_unit"/>
+        <result property="jobTitle" column="job_title"/>
+        <result property="enterpriseProperty" column="enterprise_property"/>
+        <result property="note" column="note"/>
+        <result property="aluStatus" column="alu_status"/>
+    </resultMap>
+
+
+</mapper>

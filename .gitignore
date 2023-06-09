@@ -21,4 +21,8 @@ buildNumber.properties
 
 **/.gitignore
 
+
 renren-fast-vue/
+
+ams-third-party/
+

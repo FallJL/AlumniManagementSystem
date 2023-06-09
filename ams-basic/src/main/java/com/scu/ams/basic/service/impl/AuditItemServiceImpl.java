@@ -8,19 +8,19 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.scu.common.utils.PageUtils;
 import com.scu.common.utils.Query;
 
-import com.scu.ams.basic.dao.DonationImgDao;
-import com.scu.ams.basic.entity.DonationImgEntity;
-import com.scu.ams.basic.service.DonationImgService;
+import com.scu.ams.basic.dao.AuditItemDao;
+import com.scu.ams.basic.entity.AuditItemEntity;
+import com.scu.ams.basic.service.AuditItemService;
 
 
-@Service("donationImgService")
-public class DonationImgServiceImpl extends ServiceImpl<DonationImgDao, DonationImgEntity> implements DonationImgService {
+@Service("auditItemService")
+public class AuditItemServiceImpl extends ServiceImpl<AuditItemDao, AuditItemEntity> implements AuditItemService {
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
-        IPage<DonationImgEntity> page = this.page(
-                new Query<DonationImgEntity>().getPage(params),
-                new QueryWrapper<DonationImgEntity>()
+        IPage<AuditItemEntity> page = this.page(
+                new Query<AuditItemEntity>().getPage(params),
+                new QueryWrapper<AuditItemEntity>()
         );
 
         return new PageUtils(page);

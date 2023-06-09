@@ -9,7 +9,6 @@
         <result property="aluName" column="alu_name"/>
         <result property="aluId" column="alu_id"/>
         <result property="gender" column="gender"/>
-        <result property="aluFormerName" column="alu_former_name"/>
         <result property="idCard" column="id_card"/>
         <result property="nationality" column="nationality"/>
         <result property="politicalStatus" column="political_status"/>
@@ -18,30 +17,18 @@
         <result property="clazz" column="clazz"/>
         <result property="admissionTime" column="admission_time"/>
         <result property="graduationTime" column="graduation_time"/>
-        <result property="department" column="department"/>
         <result property="major" column="major"/>
         <result property="degreeStage" column="degree_stage"/>
         <result property="phoneNum" column="phone_num"/>
-        <result property="mailingAddress" column="mailing_address"/>
         <result property="city" column="city"/>
         <result property="workUnit" column="work_unit"/>
         <result property="jobTitle" column="job_title"/>
-        <result property="industryCategory" column="industry_category"/>
         <result property="enterpriseProperty" column="enterprise_property"/>
-        <result property="birthDate" column="birth_date"/>
-        <result property="workPhone" column="work_phone"/>
-        <result property="workAddress" column="work_address"/>
-        <result property="qq" column="qq"/>
-        <result property="weibo" column="weibo"/>
-        <result property="personalWebsite" column="personal_website"/>
-        <result property="wechat" column="wechat"/>
         <result property="note" column="note"/>
-        <result property="vip" column="vip"/>
-        <result property="honorsDuringSchool" column="honors_during_school"/>
-        <result property="portraitUrl" column="portrait_url"/>
         <result property="aluStatus" column="alu_status"/>
         <result property="password" column="password"/>
         <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
     </resultMap>
     <select id="enterpriseCount" resultType="java.util.Map">
         SELECT enterprise_property AS 'key', COUNT(*) AS value

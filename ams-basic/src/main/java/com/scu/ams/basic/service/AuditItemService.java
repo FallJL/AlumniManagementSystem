@@ -2,19 +2,20 @@ package com.scu.ams.basic.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.scu.common.utils.PageUtils;
-import com.scu.ams.basic.entity.HomeImgEntity;
+import com.scu.ams.basic.entity.AuditItemEntity;
 
 import java.util.Map;
 
 /**
- * 首页图片的信息
+ * 审核项的基本信息
  *
- * @author wanghuan
- * @email 1796899275@qq.com
- * @date 2023-04-18 14:01:11
+ * @author rjl
+ * @email 190276434@qq.com
+ * @date 2023-06-08 17:52:38
  */
-public interface HomeImgService extends IService<HomeImgEntity> {
+public interface AuditItemService extends IService<AuditItemEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
 }
 
