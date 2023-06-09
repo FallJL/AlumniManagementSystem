@@ -11,55 +11,64 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/mail")
+@RequestMapping("/basic/mail")
 public class MailController {
     @Autowired
     private AlumnusBasicService alumnusBasicService;
 
     @RequestMapping("/sendBirthDayMail")
-    public R sendBirthDayMail(@RequestBody List<AlumnusBasicEntity> alumnusBasicEntityList){
-        alumnusBasicService.sendBirthDayMail(alumnusBasicEntityList);
+    public R sendBirthDayMail(@RequestBody Long id){
+        alumnusBasicService.sendBirthDayMail(id);
+        return R.ok();
+    }
+    @RequestMapping("/sendBirthDayMails")
+    public R sendBirthDayMails(@RequestBody Long[] ids){
+        alumnusBasicService.sendBirthDayMails(ids);
         return R.ok();
     }
 
     public static class InformMailRequest {
-        private List<AlumnusBasicEntity> alumnusBasicEntity;
+        private Long[] ids;
         private String information;
 
         // 构造函数、Getter和Setter方法
 
-        public InformMailRequest(List<AlumnusBasicEntity> alumnusBasicEntity, String information) {
-            this.alumnusBasicEntity = alumnusBasicEntity;
+
+        public InformMailRequest(Long[] ids, String information) {
+            this.ids = ids;
             this.information = information;
         }
+
         public InformMailRequest(){
 
         }
 
-        public List<AlumnusBasicEntity> getAlumnusBasicEntity() {
-            return alumnusBasicEntity;
+        public Long[] getIds() {
+            return ids;
+        }
+
+        public void setIds(Long[] ids) {
+            this.ids = ids;
+        }
+
+        public void setInformation(String information) {
+            this.information = information;
         }
 
         public String getInformation() {
             return information;
         }
 
-        public void setAlumnusBasicEntity(List<AlumnusBasicEntity> alumnusBasicEntity) {
-            this.alumnusBasicEntity = alumnusBasicEntity;
-        }
-
-        public void setInformation(String information) {
-            this.information = information;
-        }
     }
     @RequestMapping("/sendInformMail")
     public R sendInformMail(@RequestBody InformMailRequest request){
-        List<AlumnusBasicEntity> alumnusBasicEntityList = request.getAlumnusBasicEntity();
+        Long[] ids = request.getIds();
         String information = request.getInformation();
-        alumnusBasicService.sendInformMail(alumnusBasicEntityList, information);
+        alumnusBasicService.sendInformMail(ids, information);
         return R.ok();
     }
 
