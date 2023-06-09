@@ -1,5 +1,13 @@
 package com.scu.ams.basic.controller;
 
+
+import java.util.*;
+
+//import org.apache.shiro.authz.annotation.RequiresPermissions;
+import com.scu.ams.basic.vo.EnterprisePropertyVO;
+import com.scu.ams.basic.vo.GraduationVO;
+import com.scu.ams.basic.vo.MajorVO;
+import com.scu.ams.basic.vo.NationalityVO;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -14,9 +22,7 @@ import com.scu.ams.basic.vo.AlumnusBasicVo;
 import com.scu.common.valid.AddGroup;
 import com.scu.common.valid.UpdateGroup;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +32,7 @@ import com.scu.common.utils.PageUtils;
 import com.scu.common.utils.R;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.jws.HandlerChain;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -44,6 +51,18 @@ import javax.validation.Valid;
 public class AlumnusBasicController {
     @Autowired
     private AlumnusBasicService alumnusBasicService;
+
+    /*
+    * 测试nacos配置
+    **/
+//    @Value("${basic.name}")
+//    private String name;
+//    @Value("${basic.age}")
+//    private Integer age;
+//    @RequestMapping("/test")
+//    public R test(){
+//        return R.ok().put("name",name).put("age",age);
+//    }
 
     /**
      * 列表
@@ -163,5 +182,48 @@ public class AlumnusBasicController {
 
         return R.ok();
     }
+    /*
+    * 校友数据看板
+    **/
 
+    @RequestMapping("/alumniData")
+    public R list(@RequestBody AlumnusBasicEntity alumnusBasicEntity) {
+        PageUtils page = alumnusBasicService.queryPageWrapper(alumnusBasicEntity);
+        return R.ok().put("page", page);
+    }
+    //导出
+    @RequestMapping ("/export")
+    public R export(@RequestBody AlumnusBasicEntity alumnusBasicEntity, HttpServletResponse response){
+        alumnusBasicService.export(alumnusBasicEntity,response);
+        return R.ok();
+    }
+    //企业性质统计图
+    @RequestMapping ("/enterpriseChart")
+    public R enterpriseChart(){
+        List<EnterprisePropertyVO> enterprisePropertyVO = alumnusBasicService.enterpriseChart();
+        return R.ok().put("enterprisePropertyVO",enterprisePropertyVO);
+    }
+    //民族统计图
+    @RequestMapping ("/nationality")
+    public R nationality(){
+        List<NationalityVO> nationalityVO = alumnusBasicService.nationalityChart();
+        return R.ok().put("nationalityVO",nationalityVO);
+    }
+    //专业统计图
+    @RequestMapping ("/major")
+    public R major(){
+        List<MajorVO> majorVo = alumnusBasicService.majorChart();
+        return R.ok().put("majorVo",majorVo);
+    }
+    //毕业时间统计图
+    @RequestMapping ("/graduation")
+    public R graduation(){
+        List<GraduationVO> graduationVO = alumnusBasicService.graduationChart();
+        return R.ok().put("graduationVO",graduationVO);
+    }
+    @RequestMapping ("/test")
+    public R test(){
+        PageUtils page = alumnusBasicService.test();
+        return R.ok().put("page",page);
+    }
 }

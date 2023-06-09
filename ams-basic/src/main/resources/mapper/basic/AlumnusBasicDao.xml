@@ -30,6 +30,35 @@
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
     </resultMap>
+    <select id="enterpriseCount" resultType="java.util.Map">
+        SELECT enterprise_property AS 'key', COUNT(*) AS value
+        FROM alumnus_basic
+        WHERE enterprise_property != '未知' and enterprise_property != '无'
+        GROUP BY enterprise_property
+    </select>
+    <select id="nationalityCount" resultType="java.util.Map">
+        SELECT nationality AS 'key', COUNT(*) AS value
+        FROM alumnus_basic
+        where nationality IS NOT NULL and nationality != ''
+        GROUP BY nationality
+    </select>
+    <select id="majorCount" resultType="java.util.Map">
+        SELECT major AS 'key',  COUNT(*) AS value
+        FROM alumnus_basic
+        WHERE major IS NOT NULL AND major != ''
+        GROUP BY major
+    </select>
+    <select id="graduationCount" resultType="java.util.Map">
+        SELECT YEAR(graduation_time) AS 'key',  COUNT(*) AS value
+        FROM alumnus_basic
+        WHERE graduation_time IS NOT NULL
+        GROUP BY YEAR(graduation_time)
+    </select>
+    <!--    <select id="test" resultType="java.util.Map">-->
+<!--        SELECT #{xx} AS 'key', COUNT(*) AS value-->
+<!--        FROM alumnus_basic-->
+<!--        GROUP BY #{xx}-->
+<!--    </select>-->
 
 
 </mapper>
