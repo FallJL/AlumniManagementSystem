@@ -12,6 +12,9 @@ spring:
         server-addr: 192.168.1.141:8849
   application:
     name: ams-basic
+  jackson:
+    date-format: yyyy-MM-dd
+    time-zone: GMT+8
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
   global-config:
@@ -22,4 +25,4 @@ server:
 logging:
   level:
     com.scu.ams: debug
-
+file-upload-path: ./ams-basic/src/main/java/com/scu/ams/basic/file

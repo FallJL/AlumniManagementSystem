@@ -6,8 +6,8 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
-        <el-button v-if="isAuth('basic:donation:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
-        <el-button v-if="isAuth('basic:donation:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
+        <el-button v-if="isAuth('basic:auditdetail:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
+        <el-button v-if="isAuth('basic:auditdetail:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -29,40 +29,130 @@
         label="id">
       </el-table-column>
       <el-table-column
-        prop="donationTitle"
+        prop="auditId"
         header-align="center"
         align="center"
-        label="标题">
+        label="所属审核项的id">
       </el-table-column>
       <el-table-column
-        prop="donationContent"
+        prop="aluName"
         header-align="center"
         align="center"
-        label="新闻内容">
+        label="姓名">
       </el-table-column>
       <el-table-column
-        prop="donationDemand"
+        prop="aluId"
         header-align="center"
         align="center"
-        label="捐赠需求">
+        label="学号">
       </el-table-column>
       <el-table-column
-        prop="donationStatus"
+        prop="gender"
+        header-align="center"
+        align="center"
+        label="性别">
+      </el-table-column>
+      <el-table-column
+        prop="idCard"
+        header-align="center"
+        align="center"
+        label="身份证号">
+      </el-table-column>
+      <el-table-column
+        prop="nationality"
+        header-align="center"
+        align="center"
+        label="民族">
+      </el-table-column>
+      <el-table-column
+        prop="politicalStatus"
+        header-align="center"
+        align="center"
+        label="政治面貌">
+      </el-table-column>
+      <el-table-column
+        prop="email"
+        header-align="center"
+        align="center"
+        label="邮箱">
+      </el-table-column>
+      <el-table-column
+        prop="nativePlace"
+        header-align="center"
+        align="center"
+        label="籍贯">
+      </el-table-column>
+      <el-table-column
+        prop="clazz"
+        header-align="center"
+        align="center"
+        label="班级">
+      </el-table-column>
+      <el-table-column
+        prop="admissionTime"
+        header-align="center"
+        align="center"
+        label="入学时间">
+      </el-table-column>
+      <el-table-column
+        prop="graduationTime"
+        header-align="center"
+        align="center"
+        label="毕业时间">
+      </el-table-column>
+      <el-table-column
+        prop="major"
+        header-align="center"
+        align="center"
+        label="专业">
+      </el-table-column>
+      <el-table-column
+        prop="degreeStage"
+        header-align="center"
+        align="center"
+        label="阶段">
+      </el-table-column>
+      <el-table-column
+        prop="phoneNum"
+        header-align="center"
+        align="center"
+        label="手机">
+      </el-table-column>
+      <el-table-column
+        prop="city"
+        header-align="center"
+        align="center"
+        label="所在城市">
+      </el-table-column>
+      <el-table-column
+        prop="workUnit"
+        header-align="center"
+        align="center"
+        label="工作单位">
+      </el-table-column>
+      <el-table-column
+        prop="jobTitle"
+        header-align="center"
+        align="center"
+        label="担任职务">
+      </el-table-column>
+      <el-table-column
+        prop="enterpriseProperty"
+        header-align="center"
+        align="center"
+        label="企业性质">
+      </el-table-column>
+      <el-table-column
+        prop="note"
+        header-align="center"
+        align="center"
+        label="备注">
+      </el-table-column>
+      <el-table-column
+        prop="aluStatus"
         header-align="center"
         align="center"
         label="状态">
-      </el-table-column>
-      <el-table-column
-        prop="donationReleaseTime"
-        header-align="center"
-        align="center"
-        label="发布时间">
-      </el-table-column>
-      <el-table-column
-        prop="donationUpdateTime"
-        header-align="center"
-        align="center"
-        label="更新时间">
       </el-table-column>
       <el-table-column
         fixed="right"
@@ -91,7 +181,7 @@
 </template>
 
 <script>
-  import AddOrUpdate from './donation-add-or-update'
+  import AddOrUpdate from './auditdetail-add-or-update'
   export default {
     data () {
       return {
@@ -118,7 +208,7 @@
       getDataList () {
         this.dataListLoading = true
         this.$http({
-          url: this.$http.adornUrl('/basic/donation/list'),
+          url: this.$http.adornUrl('/basic/auditdetail/list'),
           method: 'get',
           params: this.$http.adornParams({
             'page': this.pageIndex,
@@ -169,7 +259,7 @@
           type: 'warning'
         }).then(() => {
           this.$http({
-            url: this.$http.adornUrl('/basic/donation/delete'),
+            url: this.$http.adornUrl('/basic/auditdetail/delete'),
             method: 'post',
             data: this.$http.adornData(ids, false)
           }).then(({data}) => {
