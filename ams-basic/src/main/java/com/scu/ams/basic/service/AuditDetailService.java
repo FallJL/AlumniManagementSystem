@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.scu.common.utils.PageUtils;
 import com.scu.ams.basic.entity.AuditDetailEntity;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,6 +22,11 @@ public interface AuditDetailService extends IService<AuditDetailEntity> {
 
     AuditDetailEntity infoByAuditId(Long auditId);
 
-    void auditPass(AuditDetailEntity auditDetail);
+
+    void auditPass(List<Long> ids);
+
+    Map<String, Object> infoAndBasic(Long id);
+
+    void auditNotPass(List<Long> ids);
 }
 

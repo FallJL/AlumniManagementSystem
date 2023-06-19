@@ -35,8 +35,6 @@ public interface AlumnusBasicService extends IService<AlumnusBasicEntity> {
 
     PageUtils queryPageWrapper(AlumnusBasicEntity alumnusBasicEntity);
 
-    PageUtils listRandom(Map<String, Object> params);
-
     void sendBirthDayMails(Long[] ids);
 
     void export(AlumnusBasicEntity alumnusBasicEntity, HttpServletResponse response);

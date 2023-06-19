@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
-import com.scu.ams.basic.entity.AuditItemEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,9 +44,19 @@ public class AuditDetailController {
     /**
      * 审核通过
      */
-    @RequestMapping("/auditPass")
-    public R auditPass(@RequestBody AuditDetailEntity auditDetail){
-        auditDetailService.auditPass(auditDetail);
+    @RequestMapping("/audit-pass")
+    public R auditPass(@RequestBody Long[] ids){
+        auditDetailService.auditPass(Arrays.asList(ids));
+
+        return R.ok();
+    }
+
+    /**
+     * 审核不通过
+     */
+    @RequestMapping("/audit-not-pass")
+    public R auditNotPass(@RequestBody Long[] ids){
+        auditDetailService.auditNotPass(Arrays.asList(ids));
 
         return R.ok();
     }
@@ -83,6 +92,17 @@ public class AuditDetailController {
 		AuditDetailEntity auditDetail = auditDetailService.getById(id);
 
         return R.ok().put("auditDetail", auditDetail);
+    }
+
+    /**
+     * 获取审核信息和alumnusbasic表中对应的信息
+     */
+    @RequestMapping("/info-and-basic/{id}")
+    //@RequiresPermissions("basic:auditdetail:info")
+    public R infoAndBasic(@PathVariable("id") Long id){
+        Map<String, Object> map = auditDetailService.infoAndBasic(id);
+
+        return R.ok().put("auditDetail", map.get("auditDetail")).put("alumnusBasic", map.get("alumnusBasic"));
     }
 
     /**

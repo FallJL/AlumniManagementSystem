@@ -145,9 +145,9 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
         if (alumnusBasicEntity.getAluName() != null && !alumnusBasicEntity.getAluName().equals("")){
             queryWrapper.like("alu_name",alumnusBasicEntity.getAluName());
         }
-        if (alumnusBasicEntity.getAluFormerName() != null && !alumnusBasicEntity.getAluFormerName().equals("")){
-            queryWrapper.like("alu_former_name",alumnusBasicEntity.getAluFormerName());
-        }
+//        if (alumnusBasicEntity.getAluFormerName() != null && !alumnusBasicEntity.getAluFormerName().equals("")){
+//            queryWrapper.like("alu_former_name",alumnusBasicEntity.getAluFormerName());
+//        }
         if (alumnusBasicEntity.getClazz() != null && !alumnusBasicEntity.getClazz().equals("")){
             queryWrapper.eq("clazz",alumnusBasicEntity.getClazz());
         }
@@ -436,5 +436,3 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
 //            }
 //        }
 //    }
-
-}
