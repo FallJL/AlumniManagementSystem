@@ -25,9 +25,9 @@ public class AuditDetailEntity implements Serializable {
 	@TableId
 	private Long id;
 	/**
-	 * 所属审核项的id
+	 * 校友基本信息表的id
 	 */
-	private Long auditId;
+	private Long alumnusBasicId;
 	/**
 	 * 姓名
 	 */
@@ -36,6 +36,18 @@ public class AuditDetailEntity implements Serializable {
 	 * 学号
 	 */
 	private String aluId;
+	/**
+	 * 审核状态【0待审核，1审核通过，2审核未通过，3已撤销】
+	 */
+	private Integer status;
+	/**
+	 * 创建时间
+	 */
+	private Date createTime;
+	/**
+	 * 更新时间
+	 */
+	private Date updateTime;
 	/**
 	 * 性别
 	 */

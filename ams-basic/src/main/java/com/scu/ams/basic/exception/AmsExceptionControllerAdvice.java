@@ -3,6 +3,10 @@ package com.scu.ams.basic.exception;
 import com.scu.common.exception.BizCodeEnum;
 import com.scu.common.utils.R;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpStatus;
+import org.apache.shiro.authz.AuthorizationException;
+import org.apache.shiro.authz.UnauthorizedException;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -38,6 +42,25 @@ public class AmsExceptionControllerAdvice {
 
         return R.error(BizCodeEnum.VALID_EXCEPTION.getCode(), BizCodeEnum.VALID_EXCEPTION.getMsg())
                 .put("data", errorMap);
+    }
+
+
+    /**
+     * Shiro的无权限异常处理
+     */
+    @ExceptionHandler(value = UnauthorizedException.class)
+    public R handleUnauthorizedException(UnauthorizedException e){
+        log.error("Shiro 无权限异常：", e);
+        return R.error(HttpStatus.SC_UNAUTHORIZED, "没有权限");
+    }
+
+    /**
+     * Shiro的鉴权失败异常处理
+     */
+    @ExceptionHandler(value = AuthorizationException.class)
+    public R handleAuthorizationException(AuthorizationException e){
+        log.error("Shiro 权限认证失败：", e);
+        return R.error(HttpStatus.SC_UNAUTHORIZED, "权限认证失败");
     }
 
     /**

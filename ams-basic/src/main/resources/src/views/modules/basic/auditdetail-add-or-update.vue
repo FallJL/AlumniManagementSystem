@@ -4,14 +4,23 @@
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="80px">
-    <el-form-item label="所属审核项的id" prop="auditId">
-      <el-input v-model="dataForm.auditId" placeholder="所属审核项的id"></el-input>
+    <el-form-item label="校友基本信息表的id" prop="alumnusBasicId">
+      <el-input v-model="dataForm.alumnusBasicId" placeholder="校友基本信息表的id"></el-input>
     </el-form-item>
     <el-form-item label="姓名" prop="aluName">
       <el-input v-model="dataForm.aluName" placeholder="姓名"></el-input>
     </el-form-item>
     <el-form-item label="学号" prop="aluId">
       <el-input v-model="dataForm.aluId" placeholder="学号"></el-input>
+    </el-form-item>
+    <el-form-item label="审核状态【0待审核，1审核通过，2审核未通过，3已撤销】" prop="status">
+      <el-input v-model="dataForm.status" placeholder="审核状态【0待审核，1审核通过，2审核未通过，3已撤销】"></el-input>
+    </el-form-item>
+    <el-form-item label="创建时间" prop="createTime">
+      <el-input v-model="dataForm.createTime" placeholder="创建时间"></el-input>
+    </el-form-item>
+    <el-form-item label="更新时间" prop="updateTime">
+      <el-input v-model="dataForm.updateTime" placeholder="更新时间"></el-input>
     </el-form-item>
     <el-form-item label="性别" prop="gender">
       <el-input v-model="dataForm.gender" placeholder="性别"></el-input>
@@ -82,9 +91,12 @@
         visible: false,
         dataForm: {
           id: 0,
-          auditId: '',
+          alumnusBasicId: '',
           aluName: '',
           aluId: '',
+          status: '',
+          createTime: '',
+          updateTime: '',
           gender: '',
           idCard: '',
           nationality: '',
@@ -105,14 +117,23 @@
           aluStatus: ''
         },
         dataRule: {
-          auditId: [
-            { required: true, message: '所属审核项的id不能为空', trigger: 'blur' }
+          alumnusBasicId: [
+            { required: true, message: '校友基本信息表的id不能为空', trigger: 'blur' }
           ],
           aluName: [
             { required: true, message: '姓名不能为空', trigger: 'blur' }
           ],
           aluId: [
             { required: true, message: '学号不能为空', trigger: 'blur' }
+          ],
+          status: [
+            { required: true, message: '审核状态【0待审核，1审核通过，2审核未通过，3已撤销】不能为空', trigger: 'blur' }
+          ],
+          createTime: [
+            { required: true, message: '创建时间不能为空', trigger: 'blur' }
+          ],
+          updateTime: [
+            { required: true, message: '更新时间不能为空', trigger: 'blur' }
           ],
           gender: [
             { required: true, message: '性别不能为空', trigger: 'blur' }
@@ -184,9 +205,12 @@
               params: this.$http.adornParams()
             }).then(({data}) => {
               if (data && data.code === 0) {
-                this.dataForm.auditId = data.auditDetail.auditId
+                this.dataForm.alumnusBasicId = data.auditDetail.alumnusBasicId
                 this.dataForm.aluName = data.auditDetail.aluName
                 this.dataForm.aluId = data.auditDetail.aluId
+                this.dataForm.status = data.auditDetail.status
+                this.dataForm.createTime = data.auditDetail.createTime
+                this.dataForm.updateTime = data.auditDetail.updateTime
                 this.dataForm.gender = data.auditDetail.gender
                 this.dataForm.idCard = data.auditDetail.idCard
                 this.dataForm.nationality = data.auditDetail.nationality
@@ -219,9 +243,12 @@
               method: 'post',
               data: this.$http.adornData({
                 'id': this.dataForm.id || undefined,
-                'auditId': this.dataForm.auditId,
+                'alumnusBasicId': this.dataForm.alumnusBasicId,
                 'aluName': this.dataForm.aluName,
                 'aluId': this.dataForm.aluId,
+                'status': this.dataForm.status,
+                'createTime': this.dataForm.createTime,
+                'updateTime': this.dataForm.updateTime,
                 'gender': this.dataForm.gender,
                 'idCard': this.dataForm.idCard,
                 'nationality': this.dataForm.nationality,

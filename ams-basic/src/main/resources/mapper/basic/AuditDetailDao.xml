@@ -6,9 +6,12 @@
 	<!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.scu.ams.basic.entity.AuditDetailEntity" id="auditDetailMap">
         <result property="id" column="id"/>
-        <result property="auditId" column="audit_id"/>
+        <result property="alumnusBasicId" column="alumnus_basic_id"/>
         <result property="aluName" column="alu_name"/>
         <result property="aluId" column="alu_id"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
         <result property="gender" column="gender"/>
         <result property="idCard" column="id_card"/>
         <result property="nationality" column="nationality"/>

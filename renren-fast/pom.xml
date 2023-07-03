@@ -52,6 +52,25 @@
 	</properties>
 
 	<dependencies>
+<!--		这里需要指明openfeign版本为2.1.0.RELEASE，保证版本兼容性-->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
+			<version>2.1.0.RELEASE</version>
+		</dependency>
+<!--		加上这个依赖，是为了防止openfeign调用时报错UnsatisfiedDependencyException-->
+		<dependency>
+			<groupId>com.netflix.archaius</groupId>
+			<artifactId>archaius-core</artifactId>
+			<version>0.7.6</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
 		<!--        服务注册/发现-->
 		<dependency>
 			<groupId>com.alibaba.cloud</groupId>
@@ -249,7 +268,7 @@
 			<artifactId>lombok</artifactId>
 			<version>${lombok.version}</version>
 		</dependency>
-<!--        <dependency>-->
+		<!--        <dependency>-->
 <!--            <groupId>com.scu</groupId>-->
 <!--            <artifactId>ams-common</artifactId>-->
 <!--            <version>0.0.1-SNAPSHOT</version>-->

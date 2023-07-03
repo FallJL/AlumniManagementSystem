@@ -29,10 +29,10 @@
         label="id">
       </el-table-column>
       <el-table-column
-        prop="auditId"
+        prop="alumnusBasicId"
         header-align="center"
         align="center"
-        label="所属审核项的id">
+        label="校友基本信息表的id">
       </el-table-column>
       <el-table-column
         prop="aluName"
@@ -45,6 +45,24 @@
         header-align="center"
         align="center"
         label="学号">
+      </el-table-column>
+      <el-table-column
+        prop="status"
+        header-align="center"
+        align="center"
+        label="审核状态【0待审核，1审核通过，2审核未通过，3已撤销】">
+      </el-table-column>
+      <el-table-column
+        prop="createTime"
+        header-align="center"
+        align="center"
+        label="创建时间">
+      </el-table-column>
+      <el-table-column
+        prop="updateTime"
+        header-align="center"
+        align="center"
+        label="更新时间">
       </el-table-column>
       <el-table-column
         prop="gender"

@@ -1,16 +1,16 @@
 package com.scu.ams.basic.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
-import com.scu.ams.basic.entity.AuditItemEntity;
+import com.scu.ams.basic.entity.AlumnusBasicEntity;
+import com.scu.ams.basic.service.AlumnusBasicService;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.scu.ams.basic.entity.AuditDetailEntity;
 import com.scu.ams.basic.service.AuditDetailService;
@@ -31,12 +31,21 @@ import com.scu.common.utils.R;
 public class AuditDetailController {
     @Autowired
     private AuditDetailService auditDetailService;
+    @Autowired
+    private AlumnusBasicService alumnusBasicService;
 
     /**
      * 申请进行审核
      */
+    @RequiresRoles("alumnus")
     @RequestMapping("/apply")
     public R apply(@RequestBody AuditDetailEntity auditDetail){
+        // 获取学号
+        String aluId = SecurityUtils.getSubject().getPrincipal().toString();
+        // 根据学号返回信息
+        AlumnusBasicEntity entity = alumnusBasicService.getByAluId(aluId);
+        auditDetail.setAlumnusBasicId(entity.getId());
+        auditDetail.setAluId(aluId);
         auditDetailService.apply(auditDetail);
 
         return R.ok();
@@ -45,9 +54,30 @@ public class AuditDetailController {
     /**
      * 审核通过
      */
-    @RequestMapping("/auditPass")
-    public R auditPass(@RequestBody AuditDetailEntity auditDetail){
-        auditDetailService.auditPass(auditDetail);
+    @RequestMapping("/audit-pass")
+    public R auditPass(@RequestBody Long[] ids){
+        auditDetailService.auditPass(Arrays.asList(ids));
+
+        return R.ok();
+    }
+
+    /**
+     * 审核不通过
+     */
+    @RequestMapping("/audit-not-pass")
+    public R auditNotPass(@RequestBody Long[] ids){
+        auditDetailService.auditNotPass(Arrays.asList(ids));
+
+        return R.ok();
+    }
+
+    /**
+     * 校友主动进行审核撤销
+     */
+    @RequiresRoles("alumnus")
+    @PostMapping("/audit-repeal")
+    public R auditRepeal(@RequestBody Long[] ids){
+        auditDetailService.auditRepeal(Arrays.asList(ids));
 
         return R.ok();
     }
@@ -62,27 +92,30 @@ public class AuditDetailController {
         return R.ok().put("auditDetail", auditDetail);
     }
 
-    /**
-     * 列表
-     */
-    @RequestMapping("/list")
-    //@RequiresPermissions("basic:auditdetail:list")
-    public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = auditDetailService.queryPage(params);
 
-        return R.ok().put("page", page);
+    /**
+     * 返回某个校友的全部审核项列表
+     */
+    @RequiresRoles("alumnus")
+    @RequestMapping("/info")
+    public R info(){
+        // 获取学号
+        String aluId = SecurityUtils.getSubject().getPrincipal().toString();
+		List<AuditDetailEntity> auditList = auditDetailService.getListByAluId(aluId);
+
+        return R.ok().put("auditList", auditList);
     }
 
-
     /**
-     * 信息
+     * 获取审核信息和alumnusbasic表中对应的信息
      */
-    @RequestMapping("/info/{id}")
+    @RequiresRoles("alumnus")
+    @GetMapping("/info-and-basic/{id}")
     //@RequiresPermissions("basic:auditdetail:info")
-    public R info(@PathVariable("id") Long id){
-		AuditDetailEntity auditDetail = auditDetailService.getById(id);
+    public R infoAndBasic(@PathVariable("id") Long id){
+        Map<String, Object> map = auditDetailService.infoAndBasic(id);
 
-        return R.ok().put("auditDetail", auditDetail);
+        return R.ok().put("auditDetail", map.get("auditDetail")).put("alumnusBasic", map.get("alumnusBasic"));
     }
 
     /**

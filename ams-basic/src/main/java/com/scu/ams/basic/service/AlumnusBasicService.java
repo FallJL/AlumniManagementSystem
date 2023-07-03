@@ -32,6 +32,7 @@ public interface AlumnusBasicService extends IService<AlumnusBasicEntity> {
 
     PageUtils queryPageWrapper(AlumusQueryVO alumusQueryVO);
 
+
 //    PageUtils listRandom(Map<String, Object> params);
 
     void sendBirthDayMails(Long[] ids);
@@ -49,6 +50,7 @@ public interface AlumnusBasicService extends IService<AlumnusBasicEntity> {
     List<GraduationVO> graduationChart();
     AlumnusBasicVo info(Long id);
 
+
     void inport(AlumnusBasicEntity alumnusBasicEntity);
 
     List<NativePlaceVO> nativePlaceChart();
@@ -57,6 +59,12 @@ public interface AlumnusBasicService extends IService<AlumnusBasicEntity> {
 
     List<CityVO> cityChart();
 
+
+    AlumnusBasicEntity login(AlumnusLoginVo vo);
+
+    AlumnusBasicEntity getByAluId(String aluId);
+
+    R updatePassword(String aluId, UpdatePasswordVo updatePasswordVo);
 //    PageUtils listRandom(Map<String, Object> params);
 
 //    String uploadPortrait(MultipartFile file) throws IOException;

@@ -3,10 +3,13 @@ import com.scu.ams.basic.dto.PageDTO;
 import com.scu.ams.basic.vo.*;
 import com.scu.ams.basic.utils.ExcelUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.http.HttpStatus;
+import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.*;
@@ -182,6 +185,9 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
         if (alumnusBasicEntity.getNativePlace() != null && !alumnusBasicEntity.getNativePlace().equals("")){
             queryWrapper.like("native_place",alumnusBasicEntity.getNativePlace());
         }
+//        if (alumnusBasicEntity.getAluFormerName() != null && !alumnusBasicEntity.getAluFormerName().equals("")){
+//            queryWrapper.like("alu_former_name",alumnusBasicEntity.getAluFormerName());
+//        }
         if (alumnusBasicEntity.getClazz() != null && !alumnusBasicEntity.getClazz().equals("")){
             queryWrapper.eq("clazz",alumnusBasicEntity.getClazz());
         }
@@ -243,6 +249,65 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
         BeanUtils.copyProperties(entity, vo);
 
         return vo;
+    }
+
+    @Override
+    public AlumnusBasicEntity login(AlumnusLoginVo vo) {
+        // 得到vo的学号（或手机号）、密码
+        String voLoginAccount = vo.getLoginAccount();
+        String voPassword = vo.getPassword();
+
+        // 在数据库中查询信息
+        QueryWrapper<AlumnusBasicEntity> wrapper = new QueryWrapper<>();
+        wrapper.eq("alu_id", voLoginAccount).or().eq("phone_num", voLoginAccount); // 用学号或手机号都可以
+        AlumnusBasicEntity entity = this.baseMapper.selectOne(wrapper);
+
+        // 如果能查到，则检验密码是否正确
+        if (entity != null) {
+            String password = entity.getPassword();
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            boolean matches = passwordEncoder.matches(voPassword, password); // 密码匹配，数据库中存的是加密后的密码
+
+            if (matches) {
+                entity.setPassword(null); // 不能返回密码
+                return entity;
+            }
+        }
+
+        // 如果查不到或密码错误，则登录失败
+        return null;
+    }
+
+    @Override
+    public AlumnusBasicEntity getByAluId(String aluId) {
+        QueryWrapper<AlumnusBasicEntity> wrapper = new QueryWrapper<>();
+        wrapper.eq("alu_id", aluId);
+        return this.baseMapper.selectOne(wrapper);
+    }
+
+    @Override
+    public R updatePassword(String aluId, UpdatePasswordVo updatePasswordVo) {
+        String password = updatePasswordVo.getPassword();
+        String newPassword = updatePasswordVo.getNewPassword();
+//        String confirmPassword = updatePasswordVo.getConfirmPassword();
+//        // 判断新密码和确认密码是否一致
+//        if(!newPassword.equals(confirmPassword)){
+//            return R.error("新密码和确认密码不一致");
+//        }
+        // 获取数据库的校友信息
+        AlumnusBasicEntity entity = this.getByAluId(aluId);
+        // 判断原密码与数据库的密码是否一致. Shiro采用md5加盐加密，迭代加密3次
+        Md5Hash md5Hash = new Md5Hash(password, aluId, 3);
+        if(!md5Hash.toHex().equals(entity.getPassword())){
+            return R.error("原密码不正确");
+        }
+
+        // 如果密码无误，则可以进行更新
+        UpdateWrapper<AlumnusBasicEntity> updateWrapper = new UpdateWrapper<>();
+        Md5Hash md5HashNew = new Md5Hash(newPassword, aluId, 3);
+        updateWrapper.set("password", md5HashNew.toHex()).eq("alu_id", aluId);
+        this.baseMapper.update(null, updateWrapper);
+        return R.ok("修改密码成功");
     }
 
     @Override
@@ -573,3 +638,6 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
 //            }
 //        }
 //    }
+
+//    }
+

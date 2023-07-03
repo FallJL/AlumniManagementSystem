@@ -6,9 +6,11 @@ package com.scu.ams.basic;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.scu.ams.basic.entity.AlumnusBasicEntity;
 import com.scu.ams.basic.service.AlumnusBasicService;
+import org.apache.shiro.crypto.hash.Md5Hash;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,6 +23,24 @@ class AmsBasicApplicationTests {
 
 	@Autowired
 	AlumnusBasicService alumnusBasicService;
+
+	@Test
+	public void test1() {
+		// md5加盐加密
+		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+		String encode = passwordEncoder.encode("123456");
+		System.out.println(encode);
+		// 一种可能的结果：$10$r/NtYg2eXfrAQqpj1GiuyekbuOiAih/O7pxHB3M2hcqA9DWFlStLK
+	}
+
+	@Test
+	public void test2() {
+		// 使用shiro的md5加盐加密，迭代加密3次
+		String password = "123456";
+		Md5Hash md5Hash = new Md5Hash(password, "20230625", 3);
+		System.out.println(md5Hash.toHex());
+		// a633de2d7c55d53b30dce9016ef23849
+	}
 
 //	@Autowired
 //	OSSClient ossClient;

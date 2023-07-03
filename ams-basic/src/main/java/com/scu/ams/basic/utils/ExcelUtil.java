@@ -344,6 +344,23 @@ public class ExcelUtil {
             cell.setCellStyle(commStyle);
             cell.setCellValue(records.get(i).getAdmissionTime());
 
+            cell.setCellValue(records.get(i).getClazz());
+
+//            cell = row.createCell(3);
+//            cell.setCellStyle(commStyle);
+//            cell.setCellValue(records.get(i).getAluFormerName());
+
+            cell = row.createCell(3);
+            cell.setCellStyle(commStyle);
+            cell.setCellValue(records.get(i).getAdmissionTime());
+
+//            cell = row.createCell(5);
+//            cell.setCellStyle(commStyle);
+//            cell.setCellValue(records.get(i).getDepartment());
+
+            cell = row.createCell(4);
+            cell.setCellStyle(commStyle);
+            cell.setCellValue(records.get(i).getGender());
         }
         try {
             hwb.write(response.getOutputStream());
