@@ -1,13 +1,12 @@
 package com.scu.ams.basic.controller;
 
 
+import java.text.ParseException;
 import java.util.*;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
-import com.scu.ams.basic.vo.EnterprisePropertyVO;
-import com.scu.ams.basic.vo.GraduationVO;
-import com.scu.ams.basic.vo.MajorVO;
-import com.scu.ams.basic.vo.NationalityVO;
+import com.scu.ams.basic.vo.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -18,9 +17,10 @@ import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
 import com.baomidou.mybatisplus.core.injector.methods.Update;
-import com.scu.ams.basic.vo.AlumnusBasicVo;
 import com.scu.common.valid.AddGroup;
 import com.scu.common.valid.UpdateGroup;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.validation.annotation.Validated;
@@ -36,7 +36,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.jws.HandlerChain;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-
 
 /**
  * 校友的常用基本信息
@@ -167,8 +166,8 @@ public class AlumnusBasicController {
     @RequestMapping("/update")
     //@RequiresPermissions("basic:alumnusbasic:update")
     public R update(@Validated({UpdateGroup.class}) @RequestBody AlumnusBasicEntity alumnusBasic){
-        alumnusBasicService.updateById(alumnusBasic);
 
+        alumnusBasicService.updateById(alumnusBasic);
         return R.ok();
     }
 
@@ -183,18 +182,24 @@ public class AlumnusBasicController {
         return R.ok();
     }
     /*
-    * 校友数据看板
+    * 多条件查询
     **/
 
     @RequestMapping("/alumniData")
-    public R list(@RequestBody AlumnusBasicEntity alumnusBasicEntity) {
-        PageUtils page = alumnusBasicService.queryPageWrapper(alumnusBasicEntity);
+    public R list(@RequestBody AlumusQueryVO alumusQueryVO) {
+        PageUtils page = alumnusBasicService.queryPageWrapper(alumusQueryVO);
         return R.ok().put("page", page);
     }
     //导出
     @RequestMapping ("/export")
     public R export(@RequestBody AlumnusBasicEntity alumnusBasicEntity, HttpServletResponse response){
         alumnusBasicService.export(alumnusBasicEntity,response);
+        return R.ok();
+    }
+    //导入数据库
+    @RequestMapping ("/inport")
+    public R inport(@RequestBody AlumnusBasicEntity alumnusBasicEntity){
+        alumnusBasicService.inport(alumnusBasicEntity);
         return R.ok();
     }
     //企业性质统计图
@@ -220,6 +225,24 @@ public class AlumnusBasicController {
     public R graduation(){
         List<GraduationVO> graduationVO = alumnusBasicService.graduationChart();
         return R.ok().put("graduationVO",graduationVO);
+    }
+    //籍贯统计图
+    @RequestMapping ("/nativePlace")
+    public R nativePlace(){
+        List<NativePlaceVO> nativePlaceVO = alumnusBasicService.nativePlaceChart();
+        return R.ok().put("nativePlaceVO",nativePlaceVO);
+    }
+    //阶段统计图
+    @RequestMapping ("/degreeStage")
+    public R degreeStage(){
+        List<DegreeStageVO> degreeStageVO = alumnusBasicService.degreeStageChart();
+        return R.ok().put("degreeStageVO",degreeStageVO);
+    }
+    //所在城市统计图
+    @RequestMapping ("/city")
+    public R city(){
+        List<CityVO> cityVO = alumnusBasicService.cityChart();
+        return R.ok().put("cityVO",cityVO);
     }
     @RequestMapping ("/test")
     public R test(){

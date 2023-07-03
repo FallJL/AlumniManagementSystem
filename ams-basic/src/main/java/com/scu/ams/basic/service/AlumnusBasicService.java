@@ -1,11 +1,7 @@
 package com.scu.ams.basic.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.scu.ams.basic.vo.EnterprisePropertyVO;
-import com.scu.ams.basic.vo.GraduationVO;
-import com.scu.ams.basic.vo.MajorVO;
-import com.scu.ams.basic.vo.NationalityVO;
-import com.scu.ams.basic.vo.AlumnusBasicVo;
+import com.scu.ams.basic.vo.*;
 import com.scu.common.utils.PageUtils;
 import com.scu.ams.basic.entity.AlumnusBasicEntity;
 import com.scu.common.utils.R;
@@ -15,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -33,9 +30,9 @@ public interface AlumnusBasicService extends IService<AlumnusBasicEntity> {
 
     void sendInformMail(Long[] ids, String information);
 
-    PageUtils queryPageWrapper(AlumnusBasicEntity alumnusBasicEntity);
+    PageUtils queryPageWrapper(AlumusQueryVO alumusQueryVO);
 
-    PageUtils listRandom(Map<String, Object> params);
+//    PageUtils listRandom(Map<String, Object> params);
 
     void sendBirthDayMails(Long[] ids);
 
@@ -51,6 +48,14 @@ public interface AlumnusBasicService extends IService<AlumnusBasicEntity> {
 
     List<GraduationVO> graduationChart();
     AlumnusBasicVo info(Long id);
+
+    void inport(AlumnusBasicEntity alumnusBasicEntity);
+
+    List<NativePlaceVO> nativePlaceChart();
+
+    List<DegreeStageVO> degreeStageChart();
+
+    List<CityVO> cityChart();
 
 //    PageUtils listRandom(Map<String, Object> params);
 

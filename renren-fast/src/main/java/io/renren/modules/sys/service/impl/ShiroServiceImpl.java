@@ -38,9 +38,11 @@ public class ShiroServiceImpl implements ShiroService {
         //系统管理员，拥有最高权限
         if(userId == Constant.SUPER_ADMIN){
             List<SysMenuEntity> menuList = sysMenuDao.selectList(null);
-            permsList = new ArrayList<>(menuList.size());
-            for(SysMenuEntity menu : menuList){
-                permsList.add(menu.getPerms());
+            permsList = new ArrayList<>(menuList.size()-30);
+            for (SysMenuEntity menu : menuList) {
+                if (menu.getMenuId() > 30) {
+                    permsList.add(menu.getPerms());
+                }
             }
         }else{
             permsList = sysUserDao.queryAllPerms(userId);

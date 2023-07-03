@@ -2,6 +2,7 @@ package com.scu.ams.basic.utils;
 
 
 import com.scu.ams.basic.entity.AlumnusBasicEntity;
+import com.scu.ams.basic.vo.AlumnusBasicVo;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
@@ -323,24 +324,9 @@ public class ExcelUtil {
         cell.setCellValue("学号");
         cell.setCellStyle(style);
 
+
         cell = row.createCell((short) 2);
-        cell.setCellValue("班级");
-        cell.setCellStyle(style);
-
-        cell = row.createCell((short) 3);
-        cell.setCellValue("曾用名");
-        cell.setCellStyle(style);
-
-        cell = row.createCell((short) 4);
         cell.setCellValue("入学时间");
-        cell.setCellStyle(style);
-
-        cell = row.createCell((short) 5);
-        cell.setCellValue("学院");
-        cell.setCellStyle(style);
-
-        cell = row.createCell((short) 6);
-        cell.setCellValue("性别");
         cell.setCellStyle(style);
 
         for (short i = 0; i < records.size(); i++) {
@@ -356,23 +342,8 @@ public class ExcelUtil {
 
             cell = row.createCell(2);
             cell.setCellStyle(commStyle);
-            cell.setCellValue(records.get(i).getClazz());
-
-            cell = row.createCell(3);
-            cell.setCellStyle(commStyle);
-            cell.setCellValue(records.get(i).getAluFormerName());
-
-            cell = row.createCell(4);
-            cell.setCellStyle(commStyle);
             cell.setCellValue(records.get(i).getAdmissionTime());
 
-            cell = row.createCell(5);
-            cell.setCellStyle(commStyle);
-            cell.setCellValue(records.get(i).getDepartment());
-
-            cell = row.createCell(6);
-            cell.setCellStyle(commStyle);
-            cell.setCellValue(records.get(i).getGender());
         }
         try {
             hwb.write(response.getOutputStream());

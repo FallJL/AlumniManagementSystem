@@ -1,11 +1,8 @@
 package com.scu.ams.basic.service.impl;
 import com.scu.ams.basic.dto.PageDTO;
-import com.scu.ams.basic.vo.EnterprisePropertyVO;
+import com.scu.ams.basic.vo.*;
 import com.scu.ams.basic.utils.ExcelUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.scu.ams.basic.vo.GraduationVO;
-import com.scu.ams.basic.vo.MajorVO;
-import com.scu.ams.basic.vo.NationalityVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -13,10 +10,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.text.ParseException;
+import java.util.*;
+
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.scu.ams.basic.vo.AlumnusBasicVo;
 import com.scu.common.utils.R;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -28,9 +25,7 @@ import java.io.*;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -128,37 +123,116 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
     }
 
     @Override
-    public PageUtils queryPageWrapper(AlumnusBasicEntity alumnusBasicEntity) {
+    public PageUtils queryPageWrapper(AlumusQueryVO alumnusBasicEntity)  {
         QueryWrapper<AlumnusBasicEntity> queryWrapper = new QueryWrapper<>();
+        String nativePlace = alumnusBasicEntity.getNativePlace();
+        String city = alumnusBasicEntity.getCity();
+        String query = alumnusBasicEntity.getQuery();
+        if (nativePlace != null) {
+            if (nativePlace.contains("省")) {
+                int index = nativePlace.indexOf("省");
+                if(nativePlace.contains("市")) {
+                    int index1 = nativePlace.indexOf("市");
+                    String address = nativePlace.substring(index,index1);
+                    alumnusBasicEntity.setNativePlace(address);
+                }
+                else{
+                    String extractedString = nativePlace.substring(0, index);
+                    alumnusBasicEntity.setNativePlace(extractedString);
+                }
+            }
+        }
+        if (city != null) {
+            if (city.contains("省")) {
+                int index = city.indexOf("省");
+                if(city.contains("市")) {
+                    int index1 = city.indexOf("市");
+                    String address = city.substring(index+1,index1);
+                    alumnusBasicEntity.setCity(address);
+                }
+                else{
+                    String extractedString = city.substring(0, index);
+                    alumnusBasicEntity.setCity(extractedString);
+                }
+            }
+        }
+        if (alumnusBasicEntity.getQuery() != null && !alumnusBasicEntity.getQuery().equals("")) {
+            queryWrapper.and(wrapper -> wrapper
+                    .like("alu_name", alumnusBasicEntity.getQuery())
+                    .or()
+                    .like("work_unit", alumnusBasicEntity.getQuery())
+                    .or()
+                    .like("alu_id", alumnusBasicEntity.getQuery())
+                    .or()
+                    .like("job_title", alumnusBasicEntity.getQuery())
+            );
+        }
         if(alumnusBasicEntity.getGender() != null && alumnusBasicEntity.getGender() != ' '){
             queryWrapper.eq("gender", alumnusBasicEntity.getGender());
         }
-        if (alumnusBasicEntity.getIdCard() != null && !alumnusBasicEntity.getIdCard().equals("")){
+        if (alumnusBasicEntity.getIdCard() != null){
             queryWrapper.eq("id_card",alumnusBasicEntity.getIdCard());
         }
-        if (alumnusBasicEntity.getCity() != null && !alumnusBasicEntity.getCity().equals("")){
-            queryWrapper.eq("city",alumnusBasicEntity.getCity());
+        if (alumnusBasicEntity.getNationality() != null && !alumnusBasicEntity.getNationality().equals("")){
+            queryWrapper.eq("nationality",alumnusBasicEntity.getNationality());
         }
-        if (alumnusBasicEntity.getAluId() != null && !alumnusBasicEntity.getAluId().equals("")){
-            queryWrapper.eq("alu_id",alumnusBasicEntity.getCity());
+        if (alumnusBasicEntity.getPoliticalStatus() != null && !alumnusBasicEntity.getPoliticalStatus().equals("")){
+            queryWrapper.eq("political_status",alumnusBasicEntity.getPoliticalStatus());
         }
-        if (alumnusBasicEntity.getAluName() != null && !alumnusBasicEntity.getAluName().equals("")){
-            queryWrapper.like("alu_name",alumnusBasicEntity.getAluName());
-        }
-        if (alumnusBasicEntity.getAluFormerName() != null && !alumnusBasicEntity.getAluFormerName().equals("")){
-            queryWrapper.like("alu_former_name",alumnusBasicEntity.getAluFormerName());
+        if (alumnusBasicEntity.getNativePlace() != null && !alumnusBasicEntity.getNativePlace().equals("")){
+            queryWrapper.like("native_place",alumnusBasicEntity.getNativePlace());
         }
         if (alumnusBasicEntity.getClazz() != null && !alumnusBasicEntity.getClazz().equals("")){
             queryWrapper.eq("clazz",alumnusBasicEntity.getClazz());
         }
-        List<AlumnusBasicEntity> resultList = alumnusBasicDao.selectList(queryWrapper);
-        // 创建Page对象，并设置查询结果和分页信息
-        Page<AlumnusBasicEntity> page = new Page<>();
-        page.setRecords(resultList);
-        page.setTotal(resultList.size());
+        if (alumnusBasicEntity.getGraduationTime() != null){
+            queryWrapper.like("graduation_time",alumnusBasicEntity.getGraduationTime());
+        }
+        if (alumnusBasicEntity.getMajor() != null && !alumnusBasicEntity.getMajor().equals("")){
+            queryWrapper.eq("major",alumnusBasicEntity.getMajor());
+        }
+        if (alumnusBasicEntity.getDegreeStage() != null){
+            queryWrapper.eq("degree_stage",alumnusBasicEntity.getDegreeStage());
+        }
+        if (city != null && !city.equals("")){
+            queryWrapper.like("city", alumnusBasicEntity.getCity());
+        }
+        if (alumnusBasicEntity.getEnterpriseProperty() != null && !alumnusBasicEntity.getEnterpriseProperty().equals("")) {
+            if (alumnusBasicEntity.getEnterpriseProperty().equals("其他")) {
+                queryWrapper.notIn("enterprise_property", "国有企业", "民营企业","个体独资企业","三资企业","私营企业");
+            } else {
+                queryWrapper.eq("enterprise_property", alumnusBasicEntity.getEnterpriseProperty());
+            }
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("page", alumnusBasicEntity.getPage());
+        map.put("limit", alumnusBasicEntity.getLimit());
+        IPage<AlumnusBasicEntity> page = this.page(
+                new Query<AlumnusBasicEntity>().getPage(map),
+                queryWrapper
+        );
+//        List<AlumnusBasicEntity> resultList = alumnusBasicDao.selectList(queryWrapper);
+//        // 创建Page对象，并设置查询结果和分页信息
+//        Page<AlumnusBasicEntity> page = new Page<>();
+//        page.setRecords(resultList);
+//        page.setTotal(resultList.size());
 
         // 返回PageUtils对象，将查询结果和分页信息进行封装
         return new PageUtils(page);
+    }
+
+    @Override
+    public void inport(AlumnusBasicEntity alumnusBasicEntity) {
+        String graduationTime = alumnusBasicEntity.getGraduationTime();
+        String admissionTime = alumnusBasicEntity.getAdmissionTime();
+        System.out.println("毕业时间"+graduationTime);
+        if (!Objects.equals(admissionTime, " ") && admissionTime != null){
+            alumnusBasicEntity.setAdmissionTime(admissionTime.substring(0,10));
+        }
+        if (!Objects.equals(graduationTime, " ") && graduationTime != null){
+            alumnusBasicEntity.setGraduationTime(graduationTime.substring(0,10));
+        }
+        alumnusBasicService.save(alumnusBasicEntity);
     }
 
     @Override
@@ -207,21 +281,35 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
         List<Map<String, Object>> lists = baseMapper.enterpriseCount();
         List<EnterprisePropertyVO> enterpriseProperties = new ArrayList<>();
 
+        long otherCount = 0; // 额外变量用于记录其他的count值
+
         for (Map<String, Object> map : lists) {
             String key = (String) map.get("key");
             Long value = (Long) map.get("value");
 
-            // 使用key和value进行后续操作
-            System.out.println("Key: " + key + ", Value: " + value);
-
-            EnterprisePropertyVO property = new EnterprisePropertyVO();
-            property.setEnterpriseProperty(key);
-            property.setCount(value);
-            enterpriseProperties.add(property);
+            if (!key.equals("国有企业") && !key.equals("民营企业") && !key.equals("个体独资企业")
+                    && !key.equals("三资企业") && !key.equals("私营企业")) {
+                otherCount += value; // 累加其他的count值
+            } else {
+                EnterprisePropertyVO property = new EnterprisePropertyVO();
+                property.setEnterpriseProperty(key);
+                property.setCount(value);
+                enterpriseProperties.add(property);
+            }
         }
 
+        // 添加其他情况的EnterprisePropertyVO
+        if (otherCount > 0) {
+            EnterprisePropertyVO enterprisePropertyVO = new EnterprisePropertyVO();
+            enterprisePropertyVO.setEnterpriseProperty("其他");
+            enterprisePropertyVO.setCount(otherCount);
+            enterpriseProperties.add(enterprisePropertyVO);
+        }
+
+        System.out.println(enterpriseProperties);
         return enterpriseProperties;
     }
+
 
 
 
@@ -286,7 +374,6 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
             Long value = (Long) map.get("value");
 
             // 使用key和value进行后续操作
-            System.out.println("Key: " + key + ", Value: " + value);
 
             NationalityVO nationalityVO = new NationalityVO();
             nationalityVO.setNationality(key);
@@ -306,8 +393,6 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
             String key = (String) map.get("key");
             Long value = (Long) map.get("value");
 
-            // 使用key和value进行后续操作
-            System.out.println("Key: " + key + ", Value: " + value);
 
             MajorVO majorVO = new MajorVO();
             majorVO.setMajor(key);
@@ -326,8 +411,6 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
             Integer key = (Integer) map.get("key");
             Long value = (Long) map.get("value");
 
-            // 使用key和value进行后续操作
-            System.out.println("Key: " + key + ", Value: " + value);
 
             GraduationVO graduationVO = new GraduationVO();
             graduationVO.setGraduation(key);
@@ -337,7 +420,61 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
 
         return graduationVOS;
     }
+    @Override
+    public List<NativePlaceVO> nativePlaceChart() {
+        List<Map<String, Object>> lists = baseMapper.nativePlaceCount();
+        List<NativePlaceVO> nativePlaceVOS = new ArrayList<>();
+
+        for (Map<String, Object> map : lists) {
+            String key = (String) map.get("key");
+            Long value = (Long) map.get("value");
+
+
+            NativePlaceVO nativePlaceVO = new NativePlaceVO();
+            nativePlaceVO.setNativePlace(key);
+            nativePlaceVO.setCount(value);
+            nativePlaceVOS.add(nativePlaceVO);
+        }
+        return nativePlaceVOS;
+    }
+
+    @Override
+    public List<CityVO> cityChart() {
+        List<Map<String, Object>> lists = baseMapper.cityCount();
+        List<CityVO> cityVOS = new ArrayList<>();
+
+        for (Map<String, Object> map : lists) {
+            String key = (String) map.get("key");
+            Long value = (Long) map.get("value");
+
+
+            CityVO cityVO = new CityVO();
+            cityVO.setCity(key);
+            cityVO.setCount(value);
+            cityVOS.add(cityVO);
+        }
+        return cityVOS;
+    }
+
+    @Override
+    public List<DegreeStageVO> degreeStageChart() {
+        List<Map<Integer, Object>> lists = baseMapper.degreeStageCount();
+        List<DegreeStageVO> degreeStageVOS = new ArrayList<>();
+
+        for (Map<Integer, Object> map : lists) {
+            Integer key = (Integer) map.get("key");
+            Long value = (Long) map.get("value");
+
+
+            DegreeStageVO degreeStageVO = new DegreeStageVO();
+            degreeStageVO.setDegreeStage(key);
+            degreeStageVO.setCount(value);
+            degreeStageVOS.add(degreeStageVO);
+        }
+        return degreeStageVOS;
+    }
 }
+
 //    @Override
 //    public PageUtils listRandom(Map<String, Object> params) {
 //        QueryWrapper<AlumnusBasicEntity> wrapper = new QueryWrapper<>();
@@ -436,5 +573,3 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
 //            }
 //        }
 //    }
-
-}

@@ -20,7 +20,7 @@ import javax.validation.constraints.Null;
 
 /**
  * 校友的常用基本信息
- * 
+ *
  * @author wanghuan
  * @email 1796899275@qq.com
  * @date 2023-04-18 14:01:11
@@ -79,11 +79,13 @@ public class AlumnusBasicEntity implements Serializable {
 	/**
 	 * 入学时间
 	 */
-	private Date admissionTime;
+//	private Date admissionTime;
+	private String admissionTime;
 	/**
 	 * 毕业时间
 	 */
-	private Date graduationTime;
+//	private Date graduationTime;
+	private String graduationTime;
 	/**
 	 * 专业
 	 */
