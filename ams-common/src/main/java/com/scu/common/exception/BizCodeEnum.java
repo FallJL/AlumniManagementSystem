@@ -9,10 +9,12 @@ package com.scu.common.exception;
  *     - 10：通用
  *       - 001：参数格式校验
  *     - 11：校友基本信息
+ *     - 12：校友登录
  */
 public enum BizCodeEnum {
     UNKNOWN_EXCEPTION(10000, "系统未知异常"),
-    VALID_EXCEPTION(10001, "参数校验错误");
+    VALID_EXCEPTION(10001, "参数校验错误"),
+    LOGINACCOUNT_PASSWORD_INVALID_EXCEPTION(12001, "账号或密码错误");
 
     private int code;
     private String msg;

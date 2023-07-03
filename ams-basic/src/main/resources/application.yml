@@ -45,3 +45,8 @@ logging:
 
     com.scu.ams: debug
 file-upload-path: ./ams-basic/src/main/java/com/scu/ams/basic/file
+
+shiro:
+  enabled: true
+  annotations:
+    enabled: true

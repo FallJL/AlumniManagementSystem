@@ -128,4 +128,22 @@ public class AuditDetailServiceImpl extends ServiceImpl<AuditDetailDao, AuditDet
         this.baseMapper.update(null, updateWrapper);
     }
 
+    @Override
+    public List<AuditDetailEntity> getListByAluId(String aluId) {
+        QueryWrapper<AuditDetailEntity> wrapper = new QueryWrapper<>();
+        wrapper.eq("alu_id", aluId);
+        List<AuditDetailEntity> list = this.baseMapper.selectList(wrapper);
+        return list;
+    }
+
+    @Override
+    public void auditRepeal(List<Long> ids) {
+        // 将auditDetail表的status字段更新为3（撤销审核）
+        UpdateWrapper<AuditDetailEntity> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.in("id", ids);
+        updateWrapper.eq("status", 0);
+        updateWrapper.set("status", 3);
+        this.baseMapper.update(null, updateWrapper);
+    }
+
 }

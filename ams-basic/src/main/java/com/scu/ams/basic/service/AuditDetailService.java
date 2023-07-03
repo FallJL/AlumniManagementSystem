@@ -28,5 +28,9 @@ public interface AuditDetailService extends IService<AuditDetailEntity> {
     Map<String, Object> infoAndBasic(Long id);
 
     void auditNotPass(List<Long> ids);
+
+    List<AuditDetailEntity> getListByAluId(String aluId);
+
+    void auditRepeal(List<Long> ids);
 }
 

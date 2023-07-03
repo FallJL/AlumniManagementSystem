@@ -2,14 +2,20 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: test_route
-          uri: https://www.baidu.com
+#        - id: test_route
+#          uri: https://www.baidu.com
+#          predicates:
+#            - Query=url,baidu
+#        - id: qq_route
+#          uri: https://www.qq.com
+#          predicates:
+#            - Query=url,qq
+        - id: auth_route
+          uri: lb://ams-auth-server
           predicates:
-            - Query=url,baidu
-        - id: qq_route
-          uri: https://www.qq.com
-          predicates:
-            - Query=url,qq
+            - Path=/api/auth/**
+          filters:
+            - RewritePath=/api/(?<segment>.*), /$\{segment}
 
         - id: basic_route
           uri: lb://ams-basic
@@ -18,12 +24,12 @@ spring:
           filters:
             - RewritePath=/api/(?<segment>.*), /$\{segment}
 
-        - id: third_party_route
-          uri: lb://ams-third-party
-          predicates:
-            - Path=/api/thirdparty/**
-          filters:
-            - RewritePath=/api/(?<segment>.*), /$\{segment}
+#        - id: third_party_route
+#          uri: lb://ams-third-party
+#          predicates:
+#            - Path=/api/thirdparty/**
+#          filters:
+#            - RewritePath=/api/(?<segment>.*), /$\{segment}
 
         - id: admin_route
           uri: lb://renren-fast
@@ -31,6 +37,11 @@ spring:
             - Path=/api/**
           filters:
             - RewritePath=/api/(?<segment>.*), /renren-fast/$\{segment}
+## 转到rjl的本机vue项目
+        - id: ams_host_route
+          uri: http://192.168.1.183:8001
+          predicates:
+            - Host=**.ams.ce.scu.edu.cn, ams.ce.scu.edu.cn
 ## 前端项目发的请求以/api开始
 server:
   port: 9000

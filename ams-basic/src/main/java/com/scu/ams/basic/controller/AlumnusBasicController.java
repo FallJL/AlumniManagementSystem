@@ -4,10 +4,8 @@ package com.scu.ams.basic.controller;
 import java.util.*;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
-import com.scu.ams.basic.vo.EnterprisePropertyVO;
-import com.scu.ams.basic.vo.GraduationVO;
-import com.scu.ams.basic.vo.MajorVO;
-import com.scu.ams.basic.vo.NationalityVO;
+import com.scu.ams.basic.vo.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -18,10 +16,18 @@ import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
 import com.baomidou.mybatisplus.core.injector.methods.Update;
-import com.scu.ams.basic.vo.AlumnusBasicVo;
+import com.scu.common.exception.BizCodeEnum;
 import com.scu.common.valid.AddGroup;
 import com.scu.common.valid.UpdateGroup;
+import org.apache.http.HttpStatus;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -45,35 +51,105 @@ import javax.validation.Valid;
  * @email 1796899275@qq.com
  * @date 2023-04-18 14:01:11
  */
-@RefreshScope
 @RestController
 @RequestMapping("basic/alumnusbasic")
 public class AlumnusBasicController {
     @Autowired
     private AlumnusBasicService alumnusBasicService;
 
-    /*
-    * 测试nacos配置
-    **/
-//    @Value("${basic.name}")
-//    private String name;
-//    @Value("${basic.age}")
-//    private Integer age;
-//    @RequestMapping("/test")
-//    public R test(){
-//        return R.ok().put("name",name).put("age",age);
-//    }
+    /**
+     * 通过shiro安全框架进行登录
+     */
+    @PostMapping("/login")
+    public R login(@RequestBody AlumnusLoginVo vo){
+        // 1.获取subject对象
+        Subject subject = SecurityUtils.getSubject();
+        // 2.封装请求数据到token，这里的vo的loginAccount（学号或手机号）就是username
+        UsernamePasswordToken token = new UsernamePasswordToken(vo.getLoginAccount(), vo.getPassword());
+        // 3.调用login方法进行登录认证
+        try {
+            subject.login(token);
+            // 上一步login时没抛出异常，说明登录成功
+            return R.ok().put("aluId", token.getPrincipal().toString());
+        } catch (AuthenticationException e) {
+            // 登录失败，抛出异常
+            // e.printStackTrace();
+            return R.error(BizCodeEnum.LOGINACCOUNT_PASSWORD_INVALID_EXCEPTION.getCode(),
+                    BizCodeEnum.LOGINACCOUNT_PASSWORD_INVALID_EXCEPTION.getMsg());
+        }
+    }
 
     /**
-     * 列表
+     * 通过shiro安全框架进行登出
      */
-    @RequestMapping("/list")
-    //@RequiresPermissions("basic:alumnusbasic:list")
-    public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = alumnusBasicService.queryPage(params);
-
-        return R.ok().put("page", page);
+    @RequiresRoles("alumnus")
+    @PostMapping("/logout")
+    public R logout(){
+        // 使用shiro提供的logout登出
+        Subject subject = SecurityUtils.getSubject();
+        subject.logout();
+        return R.ok("登出成功");
     }
+
+    /**
+     * 获取当前登录用户的信息
+     */
+    @RequiresRoles("alumnus")
+    @GetMapping("/info")
+    public R info(){
+        // 获取学号
+        String aluId = SecurityUtils.getSubject().getPrincipal().toString();
+        // 根据学号返回信息
+        AlumnusBasicEntity entity = alumnusBasicService.getByAluId(aluId);
+        entity.setPassword(null); // 不能返回密码
+
+        return R.ok().put("user", entity);
+    }
+
+    /**
+     * 修改密码
+     */
+    @RequiresRoles("alumnus")
+    @PostMapping("/update-password")
+    public R updatePassword(@RequestBody UpdatePasswordVo updatePasswordVo){
+        // 获取学号
+        String aluId = SecurityUtils.getSubject().getPrincipal().toString();
+        // 根据学号、vo修改密码
+        return alumnusBasicService.updatePassword(aluId, updatePasswordVo);
+    }
+
+    /**
+     * 登录认证验证 角色 的test demo
+     */
+    @RequiresRoles("alumnus")
+    @GetMapping("/role-shiro-test")
+    public R roleTest(){
+        return R.ok("登录认证验证角色成功");
+    }
+
+    /**
+     * 登录认证验证 权限 的test demo
+     */
+    @RequiresPermissions("alumnus:info")
+    @GetMapping("/permission-shiro-test")
+    public R permissionTest(){
+        return R.ok("登录认证验证权限成功");
+    }
+
+//    /**
+//     * 没有用shiro的登录
+//     */
+//    @PostMapping("/login")
+//    public R login(@RequestBody AlumnusLoginVo vo){
+//        AlumnusBasicEntity entity = alumnusBasicService.login(vo);
+//
+//        if(entity != null){ // 登录成功
+//            return R.ok().put("user", entity);
+//        } else { // 登录失败
+//            return R.error(BizCodeEnum.LOGINACCOUNT_PASSWORD_INVALID_EXCEPTION.getCode(),
+//                    BizCodeEnum.LOGINACCOUNT_PASSWORD_INVALID_EXCEPTION.getMsg());
+//        }
+//    }
 
 //    /**
 //     * 校友抽样（根据给定条件，随机抽样）
@@ -124,64 +200,64 @@ public class AlumnusBasicController {
 //        fis.close();
 //    }
 
-    /**
-     * 信息
-     */
-    @RequestMapping("/info/{id}")
-    //@RequiresPermissions("basic:alumnusbasic:info")
-    public R info(@PathVariable("id") Long id){
-        AlumnusBasicVo vo = alumnusBasicService.info(id);
+//    /**
+//     * 信息
+//     */
+//    @RequestMapping("/info/{id}")
+//    //@RequiresPermissions("basic:alumnusbasic:info")
+//    public R info(@PathVariable("id") Long id){
+//        AlumnusBasicVo vo = alumnusBasicService.info(id);
+//
+//        return R.ok().put("alumnusBasic", vo);
+//    }
 
-        return R.ok().put("alumnusBasic", vo);
-    }
+//    /**
+//     * 保存
+//     */
+//    @RequestMapping("/save")
+//    //@RequiresPermissions("basic:alumnusbasic:save")
+//    public R save(@Validated({AddGroup.class}) @RequestBody AlumnusBasicEntity alumnusBasic /*, BindingResult result */){
+////		if(result.hasErrors()){
+////            Map<String, String> map = new HashMap<>();
+////            // FieldError
+////            result.getFieldErrors().forEach((item) -> {
+////                // 1.获取错误信息
+////                String message = item.getDefaultMessage();
+////                // 2.获取错误的属性名
+////                String field = item.getField();
+////                map.put(field, message);
+////            });
+////            return R.error(400, "提交的数据不合法").put("data", map);
+////        } else {
+////            alumnusBasicService.save(alumnusBasic);
+////        }
+//
+//        alumnusBasicService.save(alumnusBasic);
+//
+//        return R.ok();
+//    }
 
-    /**
-     * 保存
-     */
-    @RequestMapping("/save")
-    //@RequiresPermissions("basic:alumnusbasic:save")
-    public R save(@Validated({AddGroup.class}) @RequestBody AlumnusBasicEntity alumnusBasic /*, BindingResult result */){
-//		if(result.hasErrors()){
-//            Map<String, String> map = new HashMap<>();
-//            // FieldError
-//            result.getFieldErrors().forEach((item) -> {
-//                // 1.获取错误信息
-//                String message = item.getDefaultMessage();
-//                // 2.获取错误的属性名
-//                String field = item.getField();
-//                map.put(field, message);
-//            });
-//            return R.error(400, "提交的数据不合法").put("data", map);
-//        } else {
-//            alumnusBasicService.save(alumnusBasic);
-//        }
+//    /**
+//     * 修改
+//     */
+//    @RequestMapping("/update")
+//    //@RequiresPermissions("basic:alumnusbasic:update")
+//    public R update(@Validated({UpdateGroup.class}) @RequestBody AlumnusBasicEntity alumnusBasic){
+//        alumnusBasicService.updateById(alumnusBasic);
+//
+//        return R.ok();
+//    }
 
-        alumnusBasicService.save(alumnusBasic);
-
-        return R.ok();
-    }
-
-    /**
-     * 修改
-     */
-    @RequestMapping("/update")
-    //@RequiresPermissions("basic:alumnusbasic:update")
-    public R update(@Validated({UpdateGroup.class}) @RequestBody AlumnusBasicEntity alumnusBasic){
-        alumnusBasicService.updateById(alumnusBasic);
-
-        return R.ok();
-    }
-
-    /**
-     * 删除
-     */
-    @RequestMapping("/delete")
-    //@RequiresPermissions("basic:alumnusbasic:delete")
-    public R delete(@RequestBody Long[] ids){
-        alumnusBasicService.removeByIds(Arrays.asList(ids));
-
-        return R.ok();
-    }
+//    /**
+//     * 删除
+//     */
+//    @RequestMapping("/delete")
+//    //@RequiresPermissions("basic:alumnusbasic:delete")
+//    public R delete(@RequestBody Long[] ids){
+//        alumnusBasicService.removeByIds(Arrays.asList(ids));
+//
+//        return R.ok();
+//    }
     /*
     * 校友数据看板
     **/

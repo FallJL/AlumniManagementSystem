@@ -1,11 +1,7 @@
 package com.scu.ams.basic.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.scu.ams.basic.vo.EnterprisePropertyVO;
-import com.scu.ams.basic.vo.GraduationVO;
-import com.scu.ams.basic.vo.MajorVO;
-import com.scu.ams.basic.vo.NationalityVO;
-import com.scu.ams.basic.vo.AlumnusBasicVo;
+import com.scu.ams.basic.vo.*;
 import com.scu.common.utils.PageUtils;
 import com.scu.ams.basic.entity.AlumnusBasicEntity;
 import com.scu.common.utils.R;
@@ -50,6 +46,11 @@ public interface AlumnusBasicService extends IService<AlumnusBasicEntity> {
     List<GraduationVO> graduationChart();
     AlumnusBasicVo info(Long id);
 
+    AlumnusBasicEntity login(AlumnusLoginVo vo);
+
+    AlumnusBasicEntity getByAluId(String aluId);
+
+    R updatePassword(String aluId, UpdatePasswordVo updatePasswordVo);
 //    PageUtils listRandom(Map<String, Object> params);
 
 //    String uploadPortrait(MultipartFile file) throws IOException;
