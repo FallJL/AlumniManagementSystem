@@ -11,33 +11,33 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.scu.ams.basic.entity.NotificationEntity;
-import com.scu.ams.basic.service.NotificationService;
+import com.scu.ams.basic.entity.AdminLogEntity;
+import com.scu.ams.basic.service.AdminLogService;
 import com.scu.common.utils.PageUtils;
 import com.scu.common.utils.R;
 
 
 
 /**
- * 通知信息
+ * 
  *
- * @author wanghuan
- * @email 1796899275@qq.com
- * @date 2023-04-18 14:01:11
+ * @author rjl
+ * @email 190276434@qq.com
+ * @date 2023-06-30 16:09:06
  */
 @RestController
-@RequestMapping("basic/notification")
-public class NotificationController {
+@RequestMapping("basic/adminlog")
+public class AdminLogController {
     @Autowired
-    private NotificationService notificationService;
+    private AdminLogService adminLogService;
 
     /**
      * 列表
      */
     @RequestMapping("/list")
-    //@RequiresPermissions("basic:notification:list")
+    //@RequiresPermissions("basic:adminlog:list")
     public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = notificationService.queryPage(params);
+        PageUtils page = adminLogService.queryPage(params);
 
         return R.ok().put("page", page);
     }
@@ -47,23 +47,20 @@ public class NotificationController {
      * 信息
      */
     @RequestMapping("/info/{id}")
-    //@RequiresPermissions("basic:notification:info")
+    //@RequiresPermissions("basic:adminlog:info")
     public R info(@PathVariable("id") Long id){
-		//Retrieve the notification entity by the given ID
-		NotificationEntity notification = notificationService.getById(id);
+		AdminLogEntity adminLog = adminLogService.getById(id);
 
-        //Return a successful response with the notification entity as a payload
-        return R.ok().put("notification", notification);
+        return R.ok().put("adminLog", adminLog);
     }
-
 
     /**
      * 保存
      */
     @RequestMapping("/save")
-    //@RequiresPermissions("basic:notification:save")
-    public R save(@RequestBody NotificationEntity notification){
-		notificationService.save(notification);
+    //@RequiresPermissions("basic:adminlog:save")
+    public R save(@RequestBody AdminLogEntity adminLog){
+		adminLogService.save(adminLog);
 
         return R.ok();
     }
@@ -72,9 +69,9 @@ public class NotificationController {
      * 修改
      */
     @RequestMapping("/update")
-    //@RequiresPermissions("basic:notification:update")
-    public R update(@RequestBody NotificationEntity notification){
-		notificationService.updateById(notification);
+    //@RequiresPermissions("basic:adminlog:update")
+    public R update(@RequestBody AdminLogEntity adminLog){
+		adminLogService.updateById(adminLog);
 
         return R.ok();
     }
@@ -83,9 +80,9 @@ public class NotificationController {
      * 删除
      */
     @RequestMapping("/delete")
-    //@RequiresPermissions("basic:notification:delete")
+    //@RequiresPermissions("basic:adminlog:delete")
     public R delete(@RequestBody Long[] ids){
-		notificationService.removeByIds(Arrays.asList(ids));
+		adminLogService.removeByIds(Arrays.asList(ids));
 
         return R.ok();
     }

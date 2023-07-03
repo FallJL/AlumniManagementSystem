@@ -54,6 +54,28 @@
         WHERE graduation_time IS NOT NULL
         GROUP BY YEAR(graduation_time)
     </select>
+    <select id="nativePlaceCount" resultType="java.util.Map">
+        SELECT SUBSTRING(native_place, 1, 2) AS 'key', COUNT(*) AS 'value'
+        FROM alumnus_basic
+        WHERE native_place IS NOT NULL AND native_place != ''
+        GROUP BY SUBSTRING(native_place, 1, 2)
+        ORDER BY value DESC
+        LIMIT 20
+    </select>
+    <select id="degreeStageCount" resultType="java.util.Map">
+        SELECT degree_stage AS 'key',  COUNT(*) AS value
+        FROM alumnus_basic
+        WHERE degree_stage IS NOT NULL
+        GROUP BY degree_stage
+    </select>
+    <select id="cityCount" resultType="java.util.Map">
+        SELECT city AS 'key',  COUNT(*) AS value
+        FROM alumnus_basic
+        WHERE city IS NOT NULL AND city !=''
+        GROUP BY city
+        ORDER BY value DESC
+        LIMIT 20
+    </select>
     <!--    <select id="test" resultType="java.util.Map">-->
 <!--        SELECT #{xx} AS 'key', COUNT(*) AS value-->
 <!--        FROM alumnus_basic-->

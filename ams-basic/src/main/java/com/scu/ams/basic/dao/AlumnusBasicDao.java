@@ -33,6 +33,14 @@ public interface AlumnusBasicDao extends BaseMapper<AlumnusBasicEntity> {
     @MapKey("key")
     List<Map<Integer, Object>> graduationCount();
 
+    @MapKey("key")
+    List<Map<String, Object>> nativePlaceCount();
+    @MapKey("key")
+    List<Map<Integer, Object>> degreeStageCount();
+
+    @MapKey("key")
+    List<Map<String, Object>> cityCount();
+
 //    @MapKey("key")
 //    List<Map<String, Integer>> test(@Param("xx") String condition);
 }

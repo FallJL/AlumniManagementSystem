@@ -20,16 +20,16 @@ public class MailController {
     @Autowired
     private AlumnusBasicService alumnusBasicService;
 
-    @RequestMapping("/sendBirthDayMail")
-    public R sendBirthDayMail(@RequestBody Long id){
-        alumnusBasicService.sendBirthDayMail(id);
-        return R.ok();
-    }
-    @RequestMapping("/sendBirthDayMails")
-    public R sendBirthDayMails(@RequestBody Long[] ids){
-        alumnusBasicService.sendBirthDayMails(ids);
-        return R.ok();
-    }
+//    @RequestMapping("/sendBirthDayMail")
+//    public R sendBirthDayMail(@RequestBody Long id){
+//        alumnusBasicService.sendBirthDayMail(id);
+//        return R.ok();
+//    }
+//    @RequestMapping("/sendBirthDayMails")
+//    public R sendBirthDayMails(@RequestBody Long[] ids){
+//        alumnusBasicService.sendBirthDayMails(ids);
+//        return R.ok();
+//    }
 
     public static class InformMailRequest {
         private Long[] ids;

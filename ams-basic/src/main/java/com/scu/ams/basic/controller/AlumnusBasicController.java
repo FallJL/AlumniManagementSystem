@@ -1,6 +1,7 @@
 package com.scu.ams.basic.controller;
 
 
+import java.text.ParseException;
 import java.util.*;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -16,6 +17,10 @@ import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
 import com.baomidou.mybatisplus.core.injector.methods.Update;
+import com.scu.common.valid.AddGroup;
+import com.scu.common.valid.UpdateGroup;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import com.scu.common.exception.BizCodeEnum;
 import com.scu.common.valid.AddGroup;
 import com.scu.common.valid.UpdateGroup;
@@ -42,7 +47,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.jws.HandlerChain;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-
 
 /**
  * 校友的常用基本信息
@@ -200,6 +204,53 @@ public class AlumnusBasicController {
 //        fis.close();
 //    }
 
+    /**
+     * 信息
+     */
+    @RequestMapping("/info/{id}")
+    //@RequiresPermissions("basic:alumnusbasic:info")
+    public R info(@PathVariable("id") Long id){
+        AlumnusBasicVo vo = alumnusBasicService.info(id);
+
+        return R.ok().put("alumnusBasic", vo);
+    }
+
+    /**
+     * 保存
+     */
+    @RequestMapping("/save")
+    //@RequiresPermissions("basic:alumnusbasic:save")
+    public R save(@Validated({AddGroup.class}) @RequestBody AlumnusBasicEntity alumnusBasic /*, BindingResult result */){
+//		if(result.hasErrors()){
+//            Map<String, String> map = new HashMap<>();
+//            // FieldError
+//            result.getFieldErrors().forEach((item) -> {
+//                // 1.获取错误信息
+//                String message = item.getDefaultMessage();
+//                // 2.获取错误的属性名
+//                String field = item.getField();
+//                map.put(field, message);
+//            });
+//            return R.error(400, "提交的数据不合法").put("data", map);
+//        } else {
+//            alumnusBasicService.save(alumnusBasic);
+//        }
+
+        alumnusBasicService.save(alumnusBasic);
+
+        return R.ok();
+    }
+
+    /**
+     * 修改
+     */
+    @RequestMapping("/update")
+    //@RequiresPermissions("basic:alumnusbasic:update")
+    public R update(@Validated({UpdateGroup.class}) @RequestBody AlumnusBasicEntity alumnusBasic){
+
+        alumnusBasicService.updateById(alumnusBasic);
+        return R.ok();
+    }
 //    /**
 //     * 信息
 //     */
@@ -259,18 +310,24 @@ public class AlumnusBasicController {
 //        return R.ok();
 //    }
     /*
-    * 校友数据看板
+    * 多条件查询
     **/
 
     @RequestMapping("/alumniData")
-    public R list(@RequestBody AlumnusBasicEntity alumnusBasicEntity) {
-        PageUtils page = alumnusBasicService.queryPageWrapper(alumnusBasicEntity);
+    public R list(@RequestBody AlumusQueryVO alumusQueryVO) {
+        PageUtils page = alumnusBasicService.queryPageWrapper(alumusQueryVO);
         return R.ok().put("page", page);
     }
     //导出
     @RequestMapping ("/export")
     public R export(@RequestBody AlumnusBasicEntity alumnusBasicEntity, HttpServletResponse response){
         alumnusBasicService.export(alumnusBasicEntity,response);
+        return R.ok();
+    }
+    //导入数据库
+    @RequestMapping ("/inport")
+    public R inport(@RequestBody AlumnusBasicEntity alumnusBasicEntity){
+        alumnusBasicService.inport(alumnusBasicEntity);
         return R.ok();
     }
     //企业性质统计图
@@ -296,6 +353,24 @@ public class AlumnusBasicController {
     public R graduation(){
         List<GraduationVO> graduationVO = alumnusBasicService.graduationChart();
         return R.ok().put("graduationVO",graduationVO);
+    }
+    //籍贯统计图
+    @RequestMapping ("/nativePlace")
+    public R nativePlace(){
+        List<NativePlaceVO> nativePlaceVO = alumnusBasicService.nativePlaceChart();
+        return R.ok().put("nativePlaceVO",nativePlaceVO);
+    }
+    //阶段统计图
+    @RequestMapping ("/degreeStage")
+    public R degreeStage(){
+        List<DegreeStageVO> degreeStageVO = alumnusBasicService.degreeStageChart();
+        return R.ok().put("degreeStageVO",degreeStageVO);
+    }
+    //所在城市统计图
+    @RequestMapping ("/city")
+    public R city(){
+        List<CityVO> cityVO = alumnusBasicService.cityChart();
+        return R.ok().put("cityVO",cityVO);
     }
     @RequestMapping ("/test")
     public R test(){
