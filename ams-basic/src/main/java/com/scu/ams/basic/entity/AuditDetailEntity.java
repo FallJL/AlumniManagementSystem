@@ -79,11 +79,11 @@ public class AuditDetailEntity implements Serializable {
 	/**
 	 * 入学时间
 	 */
-	private Date admissionTime;
+	private String admissionTime;
 	/**
 	 * 毕业时间
 	 */
-	private Date graduationTime;
+	private String graduationTime;
 	/**
 	 * 专业
 	 */

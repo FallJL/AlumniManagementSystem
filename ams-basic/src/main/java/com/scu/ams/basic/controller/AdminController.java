@@ -31,60 +31,60 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
-    /**
-     * 列表
-     */
-    @RequestMapping("/list")
-    //@RequiresPermissions("basic:admin:list")
-    public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = adminService.queryPage(params);
-
-        return R.ok().put("page", page);
-    }
-
-
-    /**
-     * 信息
-     */
-    @RequestMapping("/info/{id}")
-    //@RequiresPermissions("basic:admin:info")
-    public R info(@PathVariable("id") Long id){
-		AdminEntity admin = adminService.getById(id);
-
-        return R.ok().put("admin", admin);
-    }
-
-    /**
-     * 保存
-     */
-    @RequestMapping("/save")
-    //@RequiresPermissions("basic:admin:save")
-    public R save(@RequestBody AdminEntity admin){
-		adminService.save(admin);
-
-        return R.ok();
-    }
-
-    /**
-     * 修改
-     */
-    @RequestMapping("/update")
-    //@RequiresPermissions("basic:admin:update")
-    public R update(@RequestBody AdminEntity admin){
-		adminService.updateById(admin);
-
-        return R.ok();
-    }
-
-    /**
-     * 删除
-     */
-    @RequestMapping("/delete")
-    //@RequiresPermissions("basic:admin:delete")
-    public R delete(@RequestBody Long[] ids){
-		adminService.removeByIds(Arrays.asList(ids));
-
-        return R.ok();
-    }
+//    /**
+//     * 列表
+//     */
+//    @RequestMapping("/list")
+//    //@RequiresPermissions("basic:admin:list")
+//    public R list(@RequestParam Map<String, Object> params){
+//        PageUtils page = adminService.queryPage(params);
+//
+//        return R.ok().put("page", page);
+//    }
+//
+//
+//    /**
+//     * 信息
+//     */
+//    @RequestMapping("/info/{id}")
+//    //@RequiresPermissions("basic:admin:info")
+//    public R info(@PathVariable("id") Long id){
+//		AdminEntity admin = adminService.getById(id);
+//
+//        return R.ok().put("admin", admin);
+//    }
+//
+//    /**
+//     * 保存
+//     */
+//    @RequestMapping("/save")
+//    //@RequiresPermissions("basic:admin:save")
+//    public R save(@RequestBody AdminEntity admin){
+//		adminService.save(admin);
+//
+//        return R.ok();
+//    }
+//
+//    /**
+//     * 修改
+//     */
+//    @RequestMapping("/update")
+//    //@RequiresPermissions("basic:admin:update")
+//    public R update(@RequestBody AdminEntity admin){
+//		adminService.updateById(admin);
+//
+//        return R.ok();
+//    }
+//
+//    /**
+//     * 删除
+//     */
+//    @RequestMapping("/delete")
+//    //@RequiresPermissions("basic:admin:delete")
+//    public R delete(@RequestBody Long[] ids){
+//		adminService.removeByIds(Arrays.asList(ids));
+//
+//        return R.ok();
+//    }
 
 }

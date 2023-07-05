@@ -3,6 +3,7 @@ package com.scu.ams.basic.controller;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
 import com.scu.ams.basic.entity.AlumnusBasicEntity;
@@ -42,31 +43,21 @@ public class AuditDetailController {
     public R apply(@RequestBody AuditDetailEntity auditDetail){
         // 获取学号
         String aluId = SecurityUtils.getSubject().getPrincipal().toString();
-        // 根据学号返回信息
+
+        // 获取该学号的所有审核项，如果其中有“待审核“，则不允许进行新的申请
+        List<AuditDetailEntity> auditList = auditDetailService.getListByAluId(aluId);
+        for(AuditDetailEntity entity : auditList){
+            if(entity.getStatus() == 0){
+                return R.error("已有待审核，暂不能进行新的申请");
+            }
+        }
+
+        // 可以进行新的申请，根据学号返回信息
         AlumnusBasicEntity entity = alumnusBasicService.getByAluId(aluId);
         auditDetail.setAlumnusBasicId(entity.getId());
         auditDetail.setAluId(aluId);
+        auditDetail.setAluStatus(null); // 这个字段暂时没用
         auditDetailService.apply(auditDetail);
-
-        return R.ok();
-    }
-
-    /**
-     * 审核通过
-     */
-    @RequestMapping("/audit-pass")
-    public R auditPass(@RequestBody Long[] ids){
-        auditDetailService.auditPass(Arrays.asList(ids));
-
-        return R.ok();
-    }
-
-    /**
-     * 审核不通过
-     */
-    @RequestMapping("/audit-not-pass")
-    public R auditNotPass(@RequestBody Long[] ids){
-        auditDetailService.auditNotPass(Arrays.asList(ids));
 
         return R.ok();
     }
@@ -77,20 +68,39 @@ public class AuditDetailController {
     @RequiresRoles("alumnus")
     @PostMapping("/audit-repeal")
     public R auditRepeal(@RequestBody Long[] ids){
+        // 获取学号
+        String aluId = SecurityUtils.getSubject().getPrincipal().toString();
+
+        // 只有本人的“待审核”状态的审核项才能被撤销
+        List<AuditDetailEntity> auditList = auditDetailService.getListByAluId(aluId);
+        Long notReviewedId = null;
+        for(AuditDetailEntity entity : auditList){
+            if(entity.getStatus() == 0){
+                notReviewedId = entity.getId();
+                break;
+            }
+        }
+        for(Long id : ids){
+            if(!id.equals(notReviewedId)){
+                return R.error("要撤销的审核不属于本人或不是待审核状态！");
+            }
+        }
+
         auditDetailService.auditRepeal(Arrays.asList(ids));
 
         return R.ok();
     }
 
-    /**
-     * 根据auditId（审核项的id）查出详情
-     */
-    @RequestMapping("/infoByAuditId/{auditId}")
-    public R infoByAuditId(@PathVariable("auditId") Long auditId){
-        AuditDetailEntity auditDetail = auditDetailService.infoByAuditId(auditId);
-
-        return R.ok().put("auditDetail", auditDetail);
-    }
+//    /**
+//     * 根据auditId（审核项的id）查出详情
+//     */
+//    @RequiresRoles("alumnus")
+//    @RequestMapping("/infoByAuditId/{auditId}")
+//    public R infoByAuditId(@PathVariable("auditId") Long auditId){
+//        AuditDetailEntity auditDetail = auditDetailService.infoByAuditId(auditId);
+//
+//        return R.ok().put("auditDetail", auditDetail);
+//    }
 
 
     /**
@@ -101,7 +111,7 @@ public class AuditDetailController {
     public R info(){
         // 获取学号
         String aluId = SecurityUtils.getSubject().getPrincipal().toString();
-		List<AuditDetailEntity> auditList = auditDetailService.getListByAluId(aluId);
+        List<AuditDetailEntity> auditList = auditDetailService.getListByAluId(aluId);
 
         return R.ok().put("auditList", auditList);
     }
@@ -111,44 +121,59 @@ public class AuditDetailController {
      */
     @RequiresRoles("alumnus")
     @GetMapping("/info-and-basic/{id}")
-    //@RequiresPermissions("basic:auditdetail:info")
     public R infoAndBasic(@PathVariable("id") Long id){
+        // 获取学号
+        String aluId = SecurityUtils.getSubject().getPrincipal().toString();
+
+        // 只能查看本人的审核项，没有权限看其他人的
+        List<AuditDetailEntity> auditList = auditDetailService.getListByAluId(aluId);
+        boolean permission = false;
+        for(AuditDetailEntity auditDetail: auditList){
+            if (auditDetail.getId().equals(id)) {
+                permission = true;
+                break;
+            }
+        }
+        if (!permission){
+            return R.error("要获取的审核项不属于本人！");
+        }
+
         Map<String, Object> map = auditDetailService.infoAndBasic(id);
 
         return R.ok().put("auditDetail", map.get("auditDetail")).put("alumnusBasic", map.get("alumnusBasic"));
     }
 
-    /**
-     * 保存
-     */
-    @RequestMapping("/save")
-    //@RequiresPermissions("basic:auditdetail:save")
-    public R save(@RequestBody AuditDetailEntity auditDetail){
-		auditDetailService.save(auditDetail);
-
-        return R.ok();
-    }
-
-    /**
-     * 修改
-     */
-    @RequestMapping("/update")
-    //@RequiresPermissions("basic:auditdetail:update")
-    public R update(@RequestBody AuditDetailEntity auditDetail){
-		auditDetailService.updateById(auditDetail);
-
-        return R.ok();
-    }
-
-    /**
-     * 删除
-     */
-    @RequestMapping("/delete")
-    //@RequiresPermissions("basic:auditdetail:delete")
-    public R delete(@RequestBody Long[] ids){
-		auditDetailService.removeByIds(Arrays.asList(ids));
-
-        return R.ok();
-    }
+//    /**
+//     * 保存
+//     */
+//    @RequestMapping("/save")
+//    //@RequiresPermissions("basic:auditdetail:save")
+//    public R save(@RequestBody AuditDetailEntity auditDetail){
+//		auditDetailService.save(auditDetail);
+//
+//        return R.ok();
+//    }
+//
+//    /**
+//     * 修改
+//     */
+//    @RequestMapping("/update")
+//    //@RequiresPermissions("basic:auditdetail:update")
+//    public R update(@RequestBody AuditDetailEntity auditDetail){
+//		auditDetailService.updateById(auditDetail);
+//
+//        return R.ok();
+//    }
+//
+//    /**
+//     * 删除
+//     */
+//    @RequestMapping("/delete")
+//    //@RequiresPermissions("basic:auditdetail:delete")
+//    public R delete(@RequestBody Long[] ids){
+//		auditDetailService.removeByIds(Arrays.asList(ids));
+//
+//        return R.ok();
+//    }
 
 }

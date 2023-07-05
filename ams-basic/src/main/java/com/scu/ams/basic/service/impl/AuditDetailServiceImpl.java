@@ -93,9 +93,9 @@ public class AuditDetailServiceImpl extends ServiceImpl<AuditDetailDao, AuditDet
         List<AlumnusBasicEntity> list = details.stream().map((detail) -> {
             AlumnusBasicEntity alumnusBasic = new AlumnusBasicEntity();
             BeanUtils.copyProperties(detail, alumnusBasic);
-            alumnusBasic.setCreateTime(null);
-            alumnusBasic.setUpdateTime(null);
-            alumnusBasic.setId(detail.getAlumnusBasicId());
+            alumnusBasic.setCreateTime(null); // 不需要更新
+            alumnusBasic.setUpdateTime(null); // mysql会自动更新的
+            alumnusBasic.setId(detail.getAlumnusBasicId()); // 这里记得覆盖，因为二者id含义是不同的，要区分
 
             return alumnusBasic;
         }).collect(Collectors.toList());

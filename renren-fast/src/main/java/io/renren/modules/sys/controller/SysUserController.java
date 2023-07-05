@@ -65,7 +65,11 @@ public class SysUserController extends AbstractController {
 	 */
 	@GetMapping("/info")
 	public R info(){
-		return R.ok().put("user", getUser());
+		SysUserEntity user = getUser();
+		user.setPassword(null); // 不能返回数据库保存的密码
+		user.setSalt(null); // 不能返回盐
+
+		return R.ok().put("user", user);
 	}
 
 	/**
@@ -101,6 +105,7 @@ public class SysUserController extends AbstractController {
 		//获取用户所属的角色列表
 		List<Long> roleIdList = sysUserRoleService.queryRoleIdList(userId);
 		user.setRoleIdList(roleIdList);
+		user.setPassword(null); // 不能返回数据库保存的密码
 
 		return R.ok().put("user", user);
 	}

@@ -1,16 +1,14 @@
-package com.scu.ams.basic.vo;
+package com.scu.ams.basic.dto;
 
 import lombok.Data;
 
 import java.util.Date;
 
 /**
- * 校友的常用基本信息vo
- * 相比于实体，没有一些敏感字段：密码
- *
+ * 用于openfeign调用，管理员修改校友数据时传输的dto
  */
 @Data
-public class AlumnusBasicVo {
+public class AlumnusBasicDTO {
     /**
      * id
      */
@@ -93,16 +91,6 @@ public class AlumnusBasicVo {
      * 备注
      */
     private String note;
-    /**
-     * 状态
-     */
-    private Integer aluStatus;
-    /**
-     * 注册时间
-     */
-    private Date createTime;
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
+
+    private String feignToken;
 }

@@ -31,63 +31,63 @@ public class NotificationController {
     @Autowired
     private NotificationService notificationService;
 
-    /**
-     * 列表
-     */
-    @RequestMapping("/list")
-    //@RequiresPermissions("basic:notification:list")
-    public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = notificationService.queryPage(params);
-
-        return R.ok().put("page", page);
-    }
-
-
-    /**
-     * 信息
-     */
-    @RequestMapping("/info/{id}")
-    //@RequiresPermissions("basic:notification:info")
-    public R info(@PathVariable("id") Long id){
-		//Retrieve the notification entity by the given ID
-		NotificationEntity notification = notificationService.getById(id);
-
-        //Return a successful response with the notification entity as a payload
-        return R.ok().put("notification", notification);
-    }
-
-
-    /**
-     * 保存
-     */
-    @RequestMapping("/save")
-    //@RequiresPermissions("basic:notification:save")
-    public R save(@RequestBody NotificationEntity notification){
-		notificationService.save(notification);
-
-        return R.ok();
-    }
-
-    /**
-     * 修改
-     */
-    @RequestMapping("/update")
-    //@RequiresPermissions("basic:notification:update")
-    public R update(@RequestBody NotificationEntity notification){
-		notificationService.updateById(notification);
-
-        return R.ok();
-    }
-
-    /**
-     * 删除
-     */
-    @RequestMapping("/delete")
-    //@RequiresPermissions("basic:notification:delete")
-    public R delete(@RequestBody Long[] ids){
-		notificationService.removeByIds(Arrays.asList(ids));
-
-        return R.ok();
-    }
+//    /**
+//     * 列表
+//     */
+//    @RequestMapping("/list")
+//    //@RequiresPermissions("basic:notification:list")
+//    public R list(@RequestParam Map<String, Object> params){
+//        PageUtils page = notificationService.queryPage(params);
+//
+//        return R.ok().put("page", page);
+//    }
+//
+//
+//    /**
+//     * 信息
+//     */
+//    @RequestMapping("/info/{id}")
+//    //@RequiresPermissions("basic:notification:info")
+//    public R info(@PathVariable("id") Long id){
+//		//Retrieve the notification entity by the given ID
+//		NotificationEntity notification = notificationService.getById(id);
+//
+//        //Return a successful response with the notification entity as a payload
+//        return R.ok().put("notification", notification);
+//    }
+//
+//
+//    /**
+//     * 保存
+//     */
+//    @RequestMapping("/save")
+//    //@RequiresPermissions("basic:notification:save")
+//    public R save(@RequestBody NotificationEntity notification){
+//		notificationService.save(notification);
+//
+//        return R.ok();
+//    }
+//
+//    /**
+//     * 修改
+//     */
+//    @RequestMapping("/update")
+//    //@RequiresPermissions("basic:notification:update")
+//    public R update(@RequestBody NotificationEntity notification){
+//		notificationService.updateById(notification);
+//
+//        return R.ok();
+//    }
+//
+//    /**
+//     * 删除
+//     */
+//    @RequestMapping("/delete")
+//    //@RequiresPermissions("basic:notification:delete")
+//    public R delete(@RequestBody Long[] ids){
+//		notificationService.removeByIds(Arrays.asList(ids));
+//
+//        return R.ok();
+//    }
 
 }

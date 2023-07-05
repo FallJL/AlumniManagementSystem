@@ -18,7 +18,7 @@
 		<module>springboot-mybatisplus</module>
 		<module>ams-common</module>
 		<module>ams-gateway</module>
-		<module>ams-auth-server</module>
+		<!--<module>ams-auth-server</module>-->
 		<!--<module>ams-third-party</module>-->
 	</modules>
 

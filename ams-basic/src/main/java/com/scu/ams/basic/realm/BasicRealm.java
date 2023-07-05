@@ -28,7 +28,6 @@ public class BasicRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
-        System.out.println("进入自定义授权方法");
         // 创建对象，封装当前登录用户的角色、权限信息
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
         // 存储"角色"（应该从数据库中获取角色信息，但由于这个微服务只用于校友用户相关的功能，故简单处理，直接写alumnus角色，不在数据库中建角色表）
@@ -53,7 +52,7 @@ public class BasicRealm extends AuthorizingRealm {
             AuthenticationInfo info = new SimpleAuthenticationInfo(
                     authenticationToken.getPrincipal(),
                     alumnusBasicEntity.getPassword(),
-                    ByteSource.Util.bytes(alumnusBasicEntity.getAluId()), // 盐就是学号
+                    ByteSource.Util.bytes("scusalt"), // 盐暂固定为"scusalt"
                     aluId
             );
             return info;

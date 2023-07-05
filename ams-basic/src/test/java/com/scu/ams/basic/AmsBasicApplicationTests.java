@@ -36,10 +36,10 @@ class AmsBasicApplicationTests {
 	@Test
 	public void test2() {
 		// 使用shiro的md5加盐加密，迭代加密3次
-		String password = "123456";
-		Md5Hash md5Hash = new Md5Hash(password, "20230625", 3);
+		String password = ""; // 初始密码暂定为""
+		Md5Hash md5Hash = new Md5Hash(password, "", 3); // 盐暂固定为""
 		System.out.println(md5Hash.toHex());
-		// a633de2d7c55d53b30dce9016ef23849
+		//
 	}
 
 //	@Autowired

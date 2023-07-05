@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.http.HttpStatus;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -44,7 +45,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 
-
+@RefreshScope // 动态获取nacos的配置
 @Slf4j
 @Service("alumnusBasicService")
 public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, AlumnusBasicEntity> implements AlumnusBasicService {
@@ -52,9 +53,12 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
     @Autowired
     private JavaMailSender javaMailSender;
     @Autowired
-    private AlumnusBasicDao alumnusBasicDao;
-    @Autowired
     private AlumnusBasicService alumnusBasicService;
+    @Value("${ams.basic.initpwd}")
+    private String initpwd; // 校友用户的初始密码
+    @Value("${ams.basic.initsalt}")
+    private String initsalt; // 校友用户的初始密码对应的盐
+
 //    @Override
 //    public PageUtils queryPage(Map<String, Object> params) {
 //        IPage<AlumnusBasicEntity> page = this.page(
@@ -191,7 +195,7 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
         if (alumnusBasicEntity.getClazz() != null && !alumnusBasicEntity.getClazz().equals("")){
             queryWrapper.eq("clazz",alumnusBasicEntity.getClazz());
         }
-        if (alumnusBasicEntity.getGraduationTime() != null){
+        if (!StringUtils.isEmpty(alumnusBasicEntity.getGraduationTime())){
             queryWrapper.like("graduation_time",alumnusBasicEntity.getGraduationTime());
         }
         if (alumnusBasicEntity.getMajor() != null && !alumnusBasicEntity.getMajor().equals("")){
@@ -231,13 +235,14 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
     public void inport(AlumnusBasicEntity alumnusBasicEntity) {
         String graduationTime = alumnusBasicEntity.getGraduationTime();
         String admissionTime = alumnusBasicEntity.getAdmissionTime();
-        System.out.println("毕业时间"+graduationTime);
-        if (!Objects.equals(admissionTime, " ") && admissionTime != null){
+
+        if (admissionTime != null && !Objects.equals(admissionTime, "")){
             alumnusBasicEntity.setAdmissionTime(admissionTime.substring(0,10));
         }
-        if (!Objects.equals(graduationTime, " ") && graduationTime != null){
+        if (graduationTime != null && !Objects.equals(graduationTime, "")){
             alumnusBasicEntity.setGraduationTime(graduationTime.substring(0,10));
         }
+
         alumnusBasicService.save(alumnusBasicEntity);
     }
 
@@ -296,18 +301,26 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
 //        }
         // 获取数据库的校友信息
         AlumnusBasicEntity entity = this.getByAluId(aluId);
-        // 判断原密码与数据库的密码是否一致. Shiro采用md5加盐加密，迭代加密3次
-        Md5Hash md5Hash = new Md5Hash(password, aluId, 3);
+        // 判断原密码与数据库的密码是否一致. Shiro采用md5加盐加密，迭代加密3次，盐暂固定为"scusalt"
+        Md5Hash md5Hash = new Md5Hash(password, initsalt, 3);
         if(!md5Hash.toHex().equals(entity.getPassword())){
             return R.error("原密码不正确");
         }
 
         // 如果密码无误，则可以进行更新
         UpdateWrapper<AlumnusBasicEntity> updateWrapper = new UpdateWrapper<>();
-        Md5Hash md5HashNew = new Md5Hash(newPassword, aluId, 3);
+        Md5Hash md5HashNew = new Md5Hash(newPassword, initsalt, 3);
         updateWrapper.set("password", md5HashNew.toHex()).eq("alu_id", aluId);
         this.baseMapper.update(null, updateWrapper);
         return R.ok("修改密码成功");
+    }
+
+    @Override
+    public void resetAlumnusPassword(List<Long> ids) {
+        UpdateWrapper<AlumnusBasicEntity> updateWrapper = new UpdateWrapper<>();
+        Md5Hash md5HashNew = new Md5Hash(initpwd, initsalt, 3);
+        updateWrapper.set("password", md5HashNew.toHex()).in("id", ids);
+        this.baseMapper.update(null, updateWrapper);
     }
 
     @Override

@@ -83,3 +83,10 @@ renren:
     # token有效时长，7天，单位秒
     expire: 604800
     header: token
+feign:
+  client:
+    config:
+      default:
+        # 超时设置 10 秒超时
+        connectTimeout: 10000
+        readTimeout: 10000

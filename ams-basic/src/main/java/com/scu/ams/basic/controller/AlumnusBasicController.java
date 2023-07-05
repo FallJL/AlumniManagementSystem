@@ -62,13 +62,13 @@ public class AlumnusBasicController {
     private AlumnusBasicService alumnusBasicService;
 
     /**
-     * 通过shiro安全框架进行登录
+     * 通过shiro安全框架进行登录，因为是登录，所以不要求必须是登录状态，不用写@RequiresRoles("alumnus")
      */
     @PostMapping("/login")
     public R login(@RequestBody AlumnusLoginVo vo){
         // 1.获取subject对象
         Subject subject = SecurityUtils.getSubject();
-        // 2.封装请求数据到token，这里的vo的loginAccount（学号或手机号）就是username
+        // 2.封装请求数据到token，这里的vo的loginAccount（即学号aluId）就是username
         UsernamePasswordToken token = new UsernamePasswordToken(vo.getLoginAccount(), vo.getPassword());
         // 3.调用login方法进行登录认证
         try {
@@ -204,53 +204,32 @@ public class AlumnusBasicController {
 //        fis.close();
 //    }
 
-    /**
-     * 信息
-     */
-    @RequestMapping("/info/{id}")
-    //@RequiresPermissions("basic:alumnusbasic:info")
-    public R info(@PathVariable("id") Long id){
-        AlumnusBasicVo vo = alumnusBasicService.info(id);
+//    /**
+//     * 保存
+//     */
+//    @RequestMapping("/save")
+//    //@RequiresPermissions("basic:alumnusbasic:save")
+//    public R save(@Validated({AddGroup.class}) @RequestBody AlumnusBasicEntity alumnusBasic /*, BindingResult result */){
+////		if(result.hasErrors()){
+////            Map<String, String> map = new HashMap<>();
+////            // FieldError
+////            result.getFieldErrors().forEach((item) -> {
+////                // 1.获取错误信息
+////                String message = item.getDefaultMessage();
+////                // 2.获取错误的属性名
+////                String field = item.getField();
+////                map.put(field, message);
+////            });
+////            return R.error(400, "提交的数据不合法").put("data", map);
+////        } else {
+////            alumnusBasicService.save(alumnusBasic);
+////        }
+//
+//        alumnusBasicService.save(alumnusBasic);
+//
+//        return R.ok();
+//    }
 
-        return R.ok().put("alumnusBasic", vo);
-    }
-
-    /**
-     * 保存
-     */
-    @RequestMapping("/save")
-    //@RequiresPermissions("basic:alumnusbasic:save")
-    public R save(@Validated({AddGroup.class}) @RequestBody AlumnusBasicEntity alumnusBasic /*, BindingResult result */){
-//		if(result.hasErrors()){
-//            Map<String, String> map = new HashMap<>();
-//            // FieldError
-//            result.getFieldErrors().forEach((item) -> {
-//                // 1.获取错误信息
-//                String message = item.getDefaultMessage();
-//                // 2.获取错误的属性名
-//                String field = item.getField();
-//                map.put(field, message);
-//            });
-//            return R.error(400, "提交的数据不合法").put("data", map);
-//        } else {
-//            alumnusBasicService.save(alumnusBasic);
-//        }
-
-        alumnusBasicService.save(alumnusBasic);
-
-        return R.ok();
-    }
-
-    /**
-     * 修改
-     */
-    @RequestMapping("/update")
-    //@RequiresPermissions("basic:alumnusbasic:update")
-    public R update(@Validated({UpdateGroup.class}) @RequestBody AlumnusBasicEntity alumnusBasic){
-
-        alumnusBasicService.updateById(alumnusBasic);
-        return R.ok();
-    }
 //    /**
 //     * 信息
 //     */
@@ -299,82 +278,16 @@ public class AlumnusBasicController {
 //        return R.ok();
 //    }
 
-//    /**
-//     * 删除
-//     */
-//    @RequestMapping("/delete")
-//    //@RequiresPermissions("basic:alumnusbasic:delete")
-//    public R delete(@RequestBody Long[] ids){
-//        alumnusBasicService.removeByIds(Arrays.asList(ids));
-//
+//    //导出
+//    @RequestMapping ("/export")
+//    public R export(@RequestBody AlumnusBasicEntity alumnusBasicEntity, HttpServletResponse response){
+//        alumnusBasicService.export(alumnusBasicEntity,response);
 //        return R.ok();
 //    }
-    /*
-    * 多条件查询
-    **/
-
-    @RequestMapping("/alumniData")
-    public R list(@RequestBody AlumusQueryVO alumusQueryVO) {
-        PageUtils page = alumnusBasicService.queryPageWrapper(alumusQueryVO);
-        return R.ok().put("page", page);
-    }
-    //导出
-    @RequestMapping ("/export")
-    public R export(@RequestBody AlumnusBasicEntity alumnusBasicEntity, HttpServletResponse response){
-        alumnusBasicService.export(alumnusBasicEntity,response);
-        return R.ok();
-    }
-    //导入数据库
-    @RequestMapping ("/inport")
-    public R inport(@RequestBody AlumnusBasicEntity alumnusBasicEntity){
-        alumnusBasicService.inport(alumnusBasicEntity);
-        return R.ok();
-    }
-    //企业性质统计图
-    @RequestMapping ("/enterpriseChart")
-    public R enterpriseChart(){
-        List<EnterprisePropertyVO> enterprisePropertyVO = alumnusBasicService.enterpriseChart();
-        return R.ok().put("enterprisePropertyVO",enterprisePropertyVO);
-    }
-    //民族统计图
-    @RequestMapping ("/nationality")
-    public R nationality(){
-        List<NationalityVO> nationalityVO = alumnusBasicService.nationalityChart();
-        return R.ok().put("nationalityVO",nationalityVO);
-    }
-    //专业统计图
-    @RequestMapping ("/major")
-    public R major(){
-        List<MajorVO> majorVo = alumnusBasicService.majorChart();
-        return R.ok().put("majorVo",majorVo);
-    }
-    //毕业时间统计图
-    @RequestMapping ("/graduation")
-    public R graduation(){
-        List<GraduationVO> graduationVO = alumnusBasicService.graduationChart();
-        return R.ok().put("graduationVO",graduationVO);
-    }
-    //籍贯统计图
-    @RequestMapping ("/nativePlace")
-    public R nativePlace(){
-        List<NativePlaceVO> nativePlaceVO = alumnusBasicService.nativePlaceChart();
-        return R.ok().put("nativePlaceVO",nativePlaceVO);
-    }
-    //阶段统计图
-    @RequestMapping ("/degreeStage")
-    public R degreeStage(){
-        List<DegreeStageVO> degreeStageVO = alumnusBasicService.degreeStageChart();
-        return R.ok().put("degreeStageVO",degreeStageVO);
-    }
-    //所在城市统计图
-    @RequestMapping ("/city")
-    public R city(){
-        List<CityVO> cityVO = alumnusBasicService.cityChart();
-        return R.ok().put("cityVO",cityVO);
-    }
-    @RequestMapping ("/test")
-    public R test(){
-        PageUtils page = alumnusBasicService.test();
-        return R.ok().put("page",page);
-    }
+//
+//    @RequestMapping ("/test")
+//    public R test(){
+//        PageUtils page = alumnusBasicService.test();
+//        return R.ok().put("page",page);
+//    }
 }

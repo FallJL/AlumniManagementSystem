@@ -1,19 +1,14 @@
-package com.scu.ams.basic.vo;
+package io.renren.modules.sys.dto;
 
 import lombok.Data;
 
 import java.util.Date;
 
-/**
- * 校友的常用基本信息vo
- * 相比于实体，没有一些敏感字段：密码
- *
- */
 @Data
-public class AlumnusBasicVo {
-    /**
-     * id
-     */
+public class AlumnusImportDTO {
+
+    private String feignToken;
+
     private Long id;
     /**
      * 姓名
@@ -22,12 +17,10 @@ public class AlumnusBasicVo {
     /**
      * 学号
      */
-    // @NotBlank(message = "学号不能为空", groups = {AddGroup.class, UpdateGroup.class})
     private String aluId;
     /**
      * 性别
      */
-    // @ListValue(vals={0, 1}, groups = {AddGroup.class, UpdateGroup.class}) // 自定义的校验注解，0表示男，1表示女
     private Integer gender;
     /**
      * 身份证号
@@ -56,10 +49,12 @@ public class AlumnusBasicVo {
     /**
      * 入学时间
      */
+//	private Date admissionTime;
     private String admissionTime;
     /**
      * 毕业时间
      */
+//	private Date graduationTime;
     private String graduationTime;
     /**
      * 专业
@@ -98,6 +93,10 @@ public class AlumnusBasicVo {
      */
     private Integer aluStatus;
     /**
+     * 密码
+     */
+    private String password;
+    /**
      * 注册时间
      */
     private Date createTime;
@@ -105,4 +104,5 @@ public class AlumnusBasicVo {
      * 更新时间
      */
     private Date updateTime;
+
 }

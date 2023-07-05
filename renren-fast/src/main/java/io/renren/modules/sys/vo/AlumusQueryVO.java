@@ -1,8 +1,4 @@
-package com.scu.ams.basic.vo;
-
-import com.mysql.cj.x.protobuf.MysqlxDatatypes;
-
-import java.util.Date;
+package io.renren.modules.sys.vo;
 
 public class AlumusQueryVO {
     /*
