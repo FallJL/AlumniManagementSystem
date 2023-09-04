@@ -405,7 +405,7 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
 
         try {
             // 建立数据库连接
-            Connection connection = DriverManager.getConnection("jdbc:mysql://192.168.1.141:13306/ams_basic?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai", "root", "123456");
+            Connection connection = DriverManager.getConnection("jdbc:mysql://192.168.1.125:13306/ams_basic?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai", "root", "123456");
 
             // 执行查询语句
             String sql = "SELECT enterprise_property, COUNT(*) AS count FROM alumnus_basic GROUP BY enterprise_property";

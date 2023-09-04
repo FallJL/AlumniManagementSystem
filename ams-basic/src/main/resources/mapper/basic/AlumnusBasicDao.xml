@@ -60,7 +60,7 @@
         WHERE native_place IS NOT NULL AND native_place != ''
         GROUP BY SUBSTRING(native_place, 1, 2)
         ORDER BY value DESC
-        LIMIT 20
+        LIMIT 34
     </select>
     <select id="degreeStageCount" resultType="java.util.Map">
         SELECT degree_stage AS 'key',  COUNT(*) AS value
