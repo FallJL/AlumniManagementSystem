@@ -44,7 +44,6 @@ import com.scu.common.utils.R;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.jws.HandlerChain;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
