@@ -257,6 +257,21 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
     }
 
     @Override
+    public void cover(AlumnusBasicEntity alumnusBasic) {
+        String graduationTime = alumnusBasic.getGraduationTime();
+        String admissionTime = alumnusBasic.getAdmissionTime();
+
+        if (admissionTime != null && !Objects.equals(admissionTime, "")){
+            alumnusBasic.setAdmissionTime(admissionTime.substring(0,10));
+        }
+        if (graduationTime != null && !Objects.equals(graduationTime, "")){
+            alumnusBasic.setGraduationTime(graduationTime.substring(0,10));
+        }
+        System.out.println("被调用了");
+        baseMapper.updateByAluId(alumnusBasic.getAluId(),alumnusBasic);
+    }
+
+    @Override
     public AlumnusBasicEntity login(AlumnusLoginVo vo) {
         // 得到vo的学号（或手机号）、密码
         String voLoginAccount = vo.getLoginAccount();
@@ -313,6 +328,20 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
         updateWrapper.set("password", md5HashNew.toHex()).eq("alu_id", aluId);
         this.baseMapper.update(null, updateWrapper);
         return R.ok("修改密码成功");
+    }
+
+    @Override
+    public int selectById(AlumnusBasicEntity alumnusBasicEntity) {
+        String aluId = alumnusBasicEntity.getAluId();
+        QueryWrapper<AlumnusBasicEntity> wrapper = new QueryWrapper<>();
+        wrapper.eq("alu_id", aluId);
+        int count = this.baseMapper.selectCount(wrapper);
+        int exist = 1;//如果数据库里面存在则返回1，数据库里不存在返回0
+        System.out.println(count);
+        if(count == 0){
+            exist = 0;
+        }
+        return exist;
     }
 
     @Override

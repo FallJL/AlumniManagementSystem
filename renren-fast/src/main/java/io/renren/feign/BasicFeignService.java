@@ -67,4 +67,10 @@ public interface BasicFeignService {
 
     @PostMapping("/basic/feign/sendInformMail")
     R sendInformMail(@RequestBody InformMailRequestDTO dto);
+
+    @PostMapping ("/basic/feign/selectById")
+    R selectById(@RequestBody AlumnusImportDTO alumnusImportDTO);
+
+    @PostMapping ("/basic/feign/cover")
+    R cover(AlumnusBasicDTO alumnusBasicDTO);
 }
