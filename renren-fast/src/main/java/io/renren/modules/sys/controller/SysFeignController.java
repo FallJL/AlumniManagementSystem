@@ -130,6 +130,28 @@ public class SysFeignController {
     }
 
     /**
+     * 导入数据库前判断有无相同aluid数据
+     */
+    @PostMapping ("/selectById")
+    @RequiresPermissions("sys:user:list")
+    public R selectById(@RequestBody AlumnusImportDTO alumnusImportDTO){
+        // 判断有无token密钥，若有：说明是openfeign调用的，合法
+        alumnusImportDTO.setFeignToken(feignToken);
+
+        return basicFeignService.selectById(alumnusImportDTO);
+    }
+
+    /**
+     * 覆盖数据库已有数据
+     */
+    @PostMapping("/cover")
+    @RequiresPermissions("sys:user:list")
+    public R cover(@RequestBody AlumnusBasicDTO alumnusBasicDTO){
+        alumnusBasicDTO.setFeignToken(feignToken);
+
+        return basicFeignService.cover(alumnusBasicDTO);
+    }
+    /**
      * 专业统计图
      */
     @GetMapping ("/major") // 这里是Get

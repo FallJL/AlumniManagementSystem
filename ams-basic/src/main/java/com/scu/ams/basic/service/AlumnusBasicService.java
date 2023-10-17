@@ -67,6 +67,12 @@ public interface AlumnusBasicService extends IService<AlumnusBasicEntity> {
     R updatePassword(String aluId, UpdatePasswordVo updatePasswordVo);
 
     void resetAlumnusPassword(List<Long> ids);
+
+    int selectById(AlumnusBasicEntity alumnusBasicEntity);
+
+    void cover(AlumnusBasicEntity alumnusBasic);
+
+
 //    PageUtils listRandom(Map<String, Object> params);
 
 //    String uploadPortrait(MultipartFile file) throws IOException;

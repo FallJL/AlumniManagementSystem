@@ -178,6 +178,39 @@ public class FeignController {
         alumnusBasicService.inport(alumnusBasicEntity);
         return R.ok();
     }
+    /**
+     * 导入数据库前查看是否存在相同学号
+     */
+    @PostMapping ("/selectById")
+    public R selectById(@RequestBody AlumnusImportDTO alumnusImportDTO){
+        // 判断有无token密钥，若有：说明是openfeign调用的，合法
+        String token = alumnusImportDTO.getFeignToken();
+        if(token == null || !token.equals(feignToken)){
+            return R.error(402, "feignToken权限不正确");
+        }
+
+        AlumnusBasicEntity alumnusBasicEntity = new AlumnusBasicEntity();
+        BeanUtils.copyProperties(alumnusImportDTO, alumnusBasicEntity);
+        int exist = alumnusBasicService.selectById(alumnusBasicEntity);
+        return R.ok().put("exist",exist);
+    }
+
+    /**
+     * 覆盖数据
+     */
+    @PostMapping("/cover")
+    public R cover(@RequestBody AlumnusBasicDTO alumnusBasicDTO){
+        // 判断有无token密钥，若有：说明是openfeign调用的，合法
+        String token = alumnusBasicDTO.getFeignToken();
+        if(token == null || !token.equals(feignToken)){
+            return R.error(402, "feignToken权限不正确");
+        }
+
+        AlumnusBasicEntity alumnusBasic = new AlumnusBasicEntity();
+        BeanUtils.copyProperties(alumnusBasicDTO, alumnusBasic);
+        alumnusBasicService.cover(alumnusBasic);
+        return R.ok();
+    }
 
     /**
      * 专业统计图
