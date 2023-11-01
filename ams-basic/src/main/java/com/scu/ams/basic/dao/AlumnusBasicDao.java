@@ -41,6 +41,9 @@ public interface AlumnusBasicDao extends BaseMapper<AlumnusBasicEntity> {
     @MapKey("key")
     List<Map<String, Object>> cityCount();
 
+    void updateByAluId(@Param("alu_id")String AluId, @Param("alumnusBasic") AlumnusBasicEntity alumnusBasic);
+
+
 //    @MapKey("key")
 //    List<Map<String, Integer>> test(@Param("xx") String condition);
 }

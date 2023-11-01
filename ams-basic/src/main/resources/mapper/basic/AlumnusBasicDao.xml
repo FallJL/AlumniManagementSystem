@@ -30,6 +30,28 @@
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
     </resultMap>
+    <update id="updateByAluId">
+        UPDATE alumnus_basic
+        SET gender = #{alumnusBasic.gender},
+            alu_name = #{alumnusBasic.aluName},
+            political_status = #{alumnusBasic.politicalStatus},
+            id_card = #{alumnusBasic.idCard},
+            native_place = #{alumnusBasic.nativePlace},
+            nationality = #{alumnusBasic.nationality},
+            email = #{alumnusBasic.email},
+            clazz = #{alumnusBasic.clazz},
+            admission_time = #{alumnusBasic.admissionTime},
+            graduation_time = #{alumnusBasic.graduationTime},
+            degree_stage = #{alumnusBasic.degreeStage},
+            major = #{alumnusBasic.major},
+            enterprise_property = #{alumnusBasic.enterpriseProperty},
+            phone_num = #{alumnusBasic.phoneNum},
+            city = #{alumnusBasic.city},
+            note = #{alumnusBasic.note},
+            work_unit = #{alumnusBasic.workUnit},
+            job_title = #{alumnusBasic.jobTitle}
+        WHERE alu_id = #{alu_id}
+    </update>
     <select id="enterpriseCount" resultType="java.util.Map">
         SELECT enterprise_property AS 'key', COUNT(*) AS value
         FROM alumnus_basic
