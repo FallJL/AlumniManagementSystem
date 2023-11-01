@@ -38,10 +38,10 @@ spring:
           filters:
             - RewritePath=/api/(?<segment>.*), /renren-fast/$\{segment}
 ## 转到rjl的本机vue项目
-        - id: ams_host_route
-          uri: http://192.168.1.183:8001
-          predicates:
-            - Host=**.ams.ce.scu.edu.cn, ams.ce.scu.edu.cn
+#        - id: ams_host_route
+#          uri: http://192.168.1.183:8001
+#          predicates:
+#            - Host=**.ams.ce.scu.edu.cn, ams.ce.scu.edu.cn
 ## 前端项目发的请求以/api开始
 server:
   port: 9000
