@@ -78,7 +78,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuDao, SysMenuEntity> i
 		// 查询拥有的所有菜单
 		List<SysMenuEntity> menus = this.baseMapper.selectList(new QueryWrapper<SysMenuEntity>()
 				.gt("menu_id", 30)
-				.notIn("menu_id", 38,40)
+				.notIn("menu_id", 38,39,40)
 				.in(Objects.nonNull(menuIdList), "menu_id", menuIdList).in("type", 0, 1));
 		//查询完成 对此list直接排序
 		Collections.sort(menus);
