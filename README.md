@@ -1,5 +1,5 @@
 # AlumniManagementSystem
-校友管理系统-后端 ams-backend
+### 校友管理系统-后端 ams-backend
 
 >- Java version: 1.8.0_201 / 1.8.0
 >- Maven version: 3.6.1
@@ -22,3 +22,7 @@ renren-fast模块（需要启动）
 
 renren-generator模块
 >- 开发时使用的逆向工程, 可忽略
+
+#### 开发/生产环境配置切换
+- 更改ams-gateway, ams-basic, renren-fast中bootstrap.properties文件的nacos配置
+- 更改ams-basic, renren-fast中application.yml文件中spring.profiles.active的配置
