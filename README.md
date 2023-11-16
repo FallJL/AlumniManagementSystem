@@ -1,16 +1,18 @@
 # AlumniManagementSystem
 校友管理系统 后端 ams-backend
-- 2023/4/16
 
 >- Java version: 1.8.0_201
 >- Maven version: 3.6.1
 
-ams-basic模块
->- 逆向工程搭建成功
->- test文件夹下完成数据库的增删改查测试
-
+#### 四个主要模块
 ams-common模块
->- 每一个微服务公共的依赖，bean，工具类
+>- 负责管理所有微服务公共的依赖，bean，工具类
 
-ams-gateway
->- 网关服务
+ams-gateway模块（需要启动）
+>- 负责网关转发
+
+ams-basic模块（需要启动）
+>- 负责校友用户的操作
+
+renren-fast模块（需要启动）
+>- 负责管理员用户的操作

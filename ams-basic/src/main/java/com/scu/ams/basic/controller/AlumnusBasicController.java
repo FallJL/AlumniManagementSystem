@@ -100,9 +100,8 @@ public class AlumnusBasicController {
 
         // 4.判断是否被禁用
         Integer aluStatus = alumnusBasicService.getStatusById(aluId);
-        if (aluStatus == 0) {
-            return R.error("该账号被禁用，请联系管理员");
-        }
+        if (aluStatus == null) return R.error("该账户不存在");
+        if (aluStatus == 0) return R.error("该账号被禁用，请联系管理员");
 
         // 5.调用login方法进行登录认证
         try {

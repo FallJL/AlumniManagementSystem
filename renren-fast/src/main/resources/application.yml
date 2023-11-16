@@ -40,12 +40,12 @@ spring:
     throw-exception-if-no-handler-found: true
     pathmatch:
       matching-strategy: ANT_PATH_MATCHER
-  application:
-    name: renren-fast
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 192.168.1.125:8849
+#  application:
+#    name: renren-fast
+#  cloud:
+#    nacos:
+#      discovery:
+#        server-addr: 192.168.1.125:8849
 #  resources:
 #    add-mappings: false
 

@@ -293,7 +293,9 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
     public Integer getStatusById(String aluId) {
         QueryWrapper<AlumnusBasicEntity> wrapper = new QueryWrapper<>();
         wrapper.eq("alu_id", aluId).select("alu_status");
-        return this.baseMapper.selectOne(wrapper).getAluStatus();
+        AlumnusBasicEntity entity = this.baseMapper.selectOne(wrapper);
+        if (entity == null) return null;
+        return entity.getAluStatus();
     }
 
     @Override
