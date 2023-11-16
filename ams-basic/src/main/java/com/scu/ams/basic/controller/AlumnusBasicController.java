@@ -2,9 +2,13 @@ package com.scu.ams.basic.controller;
 
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
+import com.scu.ams.basic.entity.LoginLogEntity;
+import com.scu.ams.basic.service.LoginLogService;
+import com.scu.ams.basic.utils.IpUtil;
 import com.scu.ams.basic.vo.*;
 
 import java.io.File;
@@ -45,6 +49,7 @@ import com.scu.common.utils.PageUtils;
 import com.scu.common.utils.R;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -61,6 +66,8 @@ import javax.validation.Valid;
 public class AlumnusBasicController {
     @Autowired
     private AlumnusBasicService alumnusBasicService;
+    @Autowired
+    private LoginLogService loginLogService;
 
     @Autowired
     StringRedisTemplate stringRedisTemplate;
@@ -71,13 +78,48 @@ public class AlumnusBasicController {
      * 通过shiro安全框架进行登录，因为是登录，所以不要求必须是登录状态，不用写@RequiresRoles("alumnus")
      */
     @PostMapping("/login")
-    public R login(@RequestBody AlumnusLoginVo vo){
+    public R login(@RequestBody AlumnusLoginVo vo, HttpServletRequest request){
+        String ip = IpUtil.getIpAddr(request);
+        String cityInfo = null;
+        try {
+            cityInfo = IpUtil.getCityInfo(ip);
+        } catch (Exception e) {
+            cityInfo = "未知";
+        }
         // 1.获取subject对象
         Subject subject = SecurityUtils.getSubject();
         // 2.封装请求数据到token，这里的vo的loginAccount（即学号aluId）就是username
         UsernamePasswordToken token = new UsernamePasswordToken(vo.getLoginAccount(), vo.getPassword());
         String aluId = token.getPrincipal().toString();
-        // 3.验证用户是否被登录锁定
+
+        // 3.记录IP
+        Date date = new Date();
+        String dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
+        LoginLogEntity loginLogEntity = new LoginLogEntity();
+        AlumnusBasicEntity alumnusBasicEntity = alumnusBasicService.getByAluId(aluId);
+        if (alumnusBasicEntity == null) {
+            loginLogEntity.setName("不存在的账户");
+            loginLogEntity.setIp(ip);
+            loginLogEntity.setCreateTime(dateFormat);
+            loginLogEntity.setIpAttribution(cityInfo);
+            loginLogService.save(loginLogEntity);
+            // 如果查不到，就直接返回，不进行后面的逻辑
+            return R.error("该账户不存在");
+        } else {
+            String name = alumnusBasicEntity.getAluName();
+            loginLogEntity.setName(name);
+            loginLogEntity.setIp(ip);
+            loginLogEntity.setCreateTime(dateFormat);
+            loginLogEntity.setIpAttribution(cityInfo);
+            loginLogService.save(loginLogEntity);
+        }
+
+        // 4.判断是否被禁用
+        Integer aluStatus = alumnusBasicEntity.getAluStatus();
+        if (aluStatus == null) return R.error("该账户的状态异常，请联系管理员");
+        if (aluStatus == 0) return R.error("该账号被禁用，请联系管理员");
+
+        // 5.验证用户是否被登录锁定
         boolean lock = isLock(aluId);
         if (lock) {
             String key = String.join(":", FAIL_LOCK, aluId);
@@ -98,12 +140,7 @@ public class AlumnusBasicController {
             }
         }
 
-        // 4.判断是否被禁用
-        Integer aluStatus = alumnusBasicService.getStatusById(aluId);
-        if (aluStatus == null) return R.error("该账户不存在");
-        if (aluStatus == 0) return R.error("该账号被禁用，请联系管理员");
-
-        // 5.调用login方法进行登录认证
+        // 6.调用login方法进行登录认证
         try {
             subject.login(token);
             // 上一步login时没抛出异常，说明登录成功
