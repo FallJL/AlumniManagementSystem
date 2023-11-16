@@ -35,6 +35,9 @@ public interface BasicFeignService {
     @PostMapping("/basic/feign/delete-alumnus")
     R deleteAlumnus(@RequestBody AlumnusIdsDTO alumnusIdsDTO);
 
+    @PostMapping("/basic/feign/disable-or-enable")
+    R disableOrEnable(@RequestBody AlumnusInfoDTO alumnusInfoDTO);
+
     @PostMapping ("/basic/feign/inport")
     public R inport(@RequestBody AlumnusImportDTO alumnusImportDTO);
 

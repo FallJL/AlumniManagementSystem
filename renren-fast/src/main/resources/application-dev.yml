@@ -32,7 +32,9 @@ spring:
                 wall:
                     config:
                         multi-statement-allow: true
-
+    redis:
+        host: 192.168.1.125
+        port: 6379
 
 ##多数据源的配置
 #dynamic:

@@ -29,6 +29,7 @@ import java.io.*;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -59,6 +60,8 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
     @Value("${ams.basic.initsalt}")
     private String initsalt; // 校友用户的初始密码对应的盐
 
+    @Autowired
+    private AlumnusBasicDao alumnusBasicDao;
 //    @Override
 //    public PageUtils queryPage(Map<String, Object> params) {
 //        IPage<AlumnusBasicEntity> page = this.page(
@@ -214,6 +217,9 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
                 queryWrapper.eq("enterprise_property", alumnusBasicEntity.getEnterpriseProperty());
             }
         }
+        // 不要把password查询出来
+        queryWrapper.select(AlumnusBasicEntity.class, column -> !column.getColumn().equals("password"));
+
         Map<String, Object> map = new HashMap<>();
         map.put("page", alumnusBasicEntity.getPage());
         map.put("limit", alumnusBasicEntity.getLimit());
@@ -243,6 +249,18 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
             alumnusBasicEntity.setGraduationTime(graduationTime.substring(0,10));
         }
 
+        String idCard = alumnusBasicEntity.getIdCard();
+        String rawPassword = initpwd;
+        if (idCard.length() >= 6) {
+            // 用身份证后6位初始化密码
+            rawPassword = idCard.substring(idCard.length() - 6);
+        }
+
+        // 使用shiro的md5加盐加密，迭代加密3次
+        Md5Hash md5Hash = new Md5Hash(rawPassword, initsalt, 3);
+        String password = md5Hash.toHex();
+        alumnusBasicEntity.setPassword(password);
+
         alumnusBasicService.save(alumnusBasicEntity);
     }
 
@@ -269,6 +287,19 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
         }
         System.out.println("被调用了");
         baseMapper.updateByAluId(alumnusBasic.getAluId(),alumnusBasic);
+    }
+
+    @Override
+    public Integer getStatusById(String aluId) {
+        QueryWrapper<AlumnusBasicEntity> wrapper = new QueryWrapper<>();
+        wrapper.eq("alu_id", aluId).select("alu_status");
+        return this.baseMapper.selectOne(wrapper).getAluStatus();
+    }
+
+    @Override
+    public int selectStatusById(Long id) {
+        AlumnusBasicEntity entity = this.baseMapper.selectById(id);
+        return entity.getAluStatus();
     }
 
     @Override
@@ -322,6 +353,28 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
             return R.error("原密码不正确");
         }
 
+        // 密码长度在8到20个字符之间
+        if (newPassword.length() < 8 || newPassword.length() > 20) {
+            return R.error("新密码长度需要在8到20个字符之间");
+        }
+        // 是否包含一位数字
+        String regNumber = ".*\\d+.*";
+        // 是否包含一位小写字母
+        String regLowercase = ".*[a-z]+.*";
+        // 是否包含一位大写字母
+        String regUppercase = ".*[A-Z]+.*";
+        // 是否包含一位特殊字符
+        String regCharacter = ".*[^a-zA-Z0-9]+.*";
+        if (!newPassword.matches(regNumber)) {
+            return R.error("新密码需要包含数字");
+        } else if (!newPassword.matches(regLowercase)) {
+            return R.error("新密码需要包含小写字母");
+        } else if (!newPassword.matches(regUppercase)) {
+            return R.error("新密码需要包含大写字母");
+        } else if (!newPassword.matches(regCharacter)) {
+            return R.error("新密码需要包含特殊字符");
+        }
+
         // 如果密码无误，则可以进行更新
         UpdateWrapper<AlumnusBasicEntity> updateWrapper = new UpdateWrapper<>();
         Md5Hash md5HashNew = new Md5Hash(newPassword, initsalt, 3);
@@ -346,10 +399,32 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
 
     @Override
     public void resetAlumnusPassword(List<Long> ids) {
-        UpdateWrapper<AlumnusBasicEntity> updateWrapper = new UpdateWrapper<>();
-        Md5Hash md5HashNew = new Md5Hash(initpwd, initsalt, 3);
-        updateWrapper.set("password", md5HashNew.toHex()).in("id", ids);
-        this.baseMapper.update(null, updateWrapper);
+        List<AlumnusBasicEntity> users = this.baseMapper.selectBatchIds(ids);
+        List<String> idCards = users.stream()
+                .map(AlumnusBasicEntity::getIdCard)
+                .collect(Collectors.toList());
+
+        List<String> passwords = idCards.stream()
+                .map(this::initPassword)
+                .collect(Collectors.toList());
+
+        for (int i = 0; i < ids.size(); i++) {
+            UpdateWrapper<AlumnusBasicEntity> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.eq("id", ids.get(i)).set("password", passwords.get(i));
+            this.baseMapper.update(null, updateWrapper);
+        }
+    }
+
+    public String initPassword(String idCard) {
+        String password = initpwd;
+        if (idCard.length() >= 6) {
+            // 用身份证后6位初始化密码
+            password = idCard.substring(idCard.length() - 6);
+        }
+
+        // 使用shiro的md5加盐加密，迭代加密3次
+        Md5Hash md5Hash = new Md5Hash(password, initsalt, 3);
+        return md5Hash.toHex();
     }
 
     @Override

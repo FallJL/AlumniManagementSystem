@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
 import com.baomidou.mybatisplus.core.injector.methods.Update;
@@ -34,6 +35,7 @@ import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,6 +62,11 @@ public class AlumnusBasicController {
     @Autowired
     private AlumnusBasicService alumnusBasicService;
 
+    @Autowired
+    StringRedisTemplate stringRedisTemplate;
+    private static final String FAIL_COUNTER = "basic_user_login_fail_counter";
+    private static final String FAIL_LOCK = "basic_user_login_fail_lock";
+
     /**
      * 通过shiro安全框架进行登录，因为是登录，所以不要求必须是登录状态，不用写@RequiresRoles("alumnus")
      */
@@ -69,17 +76,136 @@ public class AlumnusBasicController {
         Subject subject = SecurityUtils.getSubject();
         // 2.封装请求数据到token，这里的vo的loginAccount（即学号aluId）就是username
         UsernamePasswordToken token = new UsernamePasswordToken(vo.getLoginAccount(), vo.getPassword());
-        // 3.调用login方法进行登录认证
+        String aluId = token.getPrincipal().toString();
+        // 3.验证用户是否被登录锁定
+        boolean lock = isLock(aluId);
+        if (lock) {
+            String key = String.join(":", FAIL_LOCK, aluId);
+            // 获取过期时间
+            long t = unlockTime(aluId);
+            long second = stringRedisTemplate.opsForValue().getOperations().getExpire(key, TimeUnit.SECONDS);
+            if(t>0){
+                long sec=second-t*60;
+                if(sec==0){
+                    return R.error("登录验证失败次数过多，请" + t + "分钟后再试！");
+                }
+                else{
+                    return R.error("登录验证失败次数过多，请" + t + "分"+sec+"秒后再试！");
+                }
+            }
+            else {
+                return R.error("登录验证失败次数过多，请" + second + "秒后再试！");
+            }
+        }
+
+        // 4.判断是否被禁用
+        Integer aluStatus = alumnusBasicService.getStatusById(aluId);
+        if (aluStatus == 0) {
+            return R.error("该账号被禁用，请联系管理员");
+        }
+
+        // 5.调用login方法进行登录认证
         try {
             subject.login(token);
             // 上一步login时没抛出异常，说明登录成功
-            return R.ok().put("aluId", token.getPrincipal().toString());
+
+            // 登录成功 移除失败计数器
+            deleteLoginFailCounter(aluId);
+            return R.ok().put("aluId", aluId);
         } catch (AuthenticationException e) {
             // 登录失败，抛出异常
             // e.printStackTrace();
-            return R.error(BizCodeEnum.LOGINACCOUNT_PASSWORD_INVALID_EXCEPTION.getCode(),
-                    BizCodeEnum.LOGINACCOUNT_PASSWORD_INVALID_EXCEPTION.getMsg());
+            setCheckFailCounter(aluId);
+            if(isLock(aluId)){
+                return R.error("账号或密码不正确！由于短期内您登录验证失败次数过多，请15分钟后再尝试登录！");
+            }
+            int remain = 5 - getLoginFailCounter(aluId); // 得到剩余可尝试次数
+            return R.error("账号或密码不正确，再错误输入" + remain + "次后将暂停登录15分钟");
+//            return R.error(BizCodeEnum.LOGINACCOUNT_PASSWORD_INVALID_EXCEPTION.getCode(),
+//                    BizCodeEnum.LOGINACCOUNT_PASSWORD_INVALID_EXCEPTION.getMsg());
         }
+    }
+
+    /**
+     * 登录失败计数器
+     *
+     * @param aluId
+     */
+    public void setCheckFailCounter(String aluId) {
+        String key = String.join(":", FAIL_COUNTER, aluId);
+        String value = stringRedisTemplate.opsForValue().get(key);
+        // 如果是第一次输入错误
+        if (value == null) {
+            stringRedisTemplate.opsForValue().set(key, "1");
+            stringRedisTemplate.expire(key, 300, TimeUnit.SECONDS);
+        } else {
+            // 非第一次
+            // 获取key的当前生存时间和对应的登录失败次数
+            Long expiration = stringRedisTemplate.getExpire(key, TimeUnit.SECONDS);
+            Integer count = Integer.valueOf(value);
+            if (expiration > 0) {
+            // System.out.println("The TTL of the key is: " + expiration);
+                stringRedisTemplate.opsForValue().set(key, Integer.toString(count + 1));
+                stringRedisTemplate.expire(key, expiration, TimeUnit.SECONDS);
+            }
+            if ((count.intValue()+1) == 5) {
+                // 失败达到五次 设置锁定缓存
+                lock(aluId);
+            }
+        }
+    }
+
+    /**
+     * 得到计数器的值
+     *
+     * @param aluId
+     */
+    public Integer getLoginFailCounter(String aluId) {
+        String key = String.join(":", FAIL_COUNTER, aluId);
+        String value = stringRedisTemplate.opsForValue().get(key);
+        if (value == null) return 0;
+        else return Integer.valueOf(value);
+    }
+
+    /**
+     * 移除计数器
+     *
+     * @param aluId
+     */
+    public void deleteLoginFailCounter(String aluId) {
+        stringRedisTemplate.delete(String.join(":", FAIL_COUNTER, aluId));
+    }
+
+
+    /**
+     * 失败达到一定一定次数 锁定15分钟
+     *
+     * @param aluId
+     */
+    public void lock(String aluId) {
+        String key = String.join(":", FAIL_LOCK, aluId);
+        stringRedisTemplate.opsForValue().set(key, "lock", 15, TimeUnit.MINUTES);
+    }
+
+    /**
+     * 是否被登录锁定
+     *
+     * @param aluId
+     * @return
+     */
+    public boolean isLock(String aluId) {
+        return stringRedisTemplate.hasKey(String.join(":", FAIL_LOCK, aluId));
+    }
+
+    /**
+     * 获取解锁的时间
+     *
+     * @param aluId
+     * @return
+     */
+    public long unlockTime(String aluId) {
+        String key = String.join(":", FAIL_LOCK, aluId);
+        return stringRedisTemplate.opsForValue().getOperations().getExpire(key, TimeUnit.MINUTES);
     }
 
     /**

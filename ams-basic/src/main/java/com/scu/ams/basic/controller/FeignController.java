@@ -163,6 +163,31 @@ public class FeignController {
     }
 
     /**
+     * 禁用或启用某个校友数据
+     */
+    @PostMapping("/disable-or-enable")
+    public R disableOrEnable(@RequestBody AlumnusInfoDTO alumnusInfoDTO){
+        // 判断有无token密钥，若有：说明是openfeign调用的，合法
+        String token = alumnusInfoDTO.getFeignToken();
+        if(token == null || !token.equals(feignToken)){
+            return R.error(402, "feignToken权限不正确");
+        }
+
+        Long id = alumnusInfoDTO.getId();
+        int aluStatus = alumnusBasicService.selectStatusById(id);
+        if (aluStatus == 0) aluStatus = 1;
+        else aluStatus = 0;
+
+        AlumnusBasicEntity entity = new AlumnusBasicEntity();
+        entity.setId(id);
+        entity.setAluStatus(aluStatus);
+        alumnusBasicService.updateById(entity);
+
+        return R.ok();
+    }
+
+
+    /**
      * 导入数据库
      */
     @PostMapping ("/inport")
