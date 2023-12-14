@@ -10,6 +10,8 @@ import org.apache.shiro.crypto.hash.Md5Hash;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.io.File;
@@ -17,12 +19,16 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.UUID;
 
 @SpringBootTest
 class AmsBasicApplicationTests {
 
 	@Autowired
 	AlumnusBasicService alumnusBasicService;
+
+	@Autowired
+	StringRedisTemplate stringRedisTemplate;
 
 	@Test
 	public void test1() {
@@ -39,7 +45,56 @@ class AmsBasicApplicationTests {
 		String password = ""; // 初始密码暂定为""
 		Md5Hash md5Hash = new Md5Hash(password, "", 3); // 盐暂固定为""
 		System.out.println(md5Hash.toHex());
-		//
+	}
+
+	@Test
+	public void test3(){
+		ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
+
+		ops.set("hello", "world_" + UUID.randomUUID().toString());
+
+		String hello = ops.get("hello");
+		System.out.println("之前保存的数据是：" + hello);
+	}
+
+	@Test
+	public void test4(){
+		ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
+
+		String hello = ops.get("hh");
+		System.out.println(hello == null);
+	}
+
+	@Test
+	public void testPassword(){
+		String password = "aaaabbbb2C";
+		// 密码长度在8到20个字符之间
+		if (password.length() < 8 || password.length() > 20) {
+			System.out.println("长度不对");
+			return;
+		}
+
+		// 是否包含一位数字
+		String regNumber = ".*\\d+.*";
+		// 是否包含一位小写字母
+		String regLowercase = ".*[a-z]+.*";
+		// 是否包含一位大写字母
+		String regUppercase = ".*[A-Z]+.*";
+		// 是否包含一位特殊字符
+		String regCharacter = ".*[^a-zA-Z0-9]+.*";
+		// String regCharacter = "(?=.*[`~!@#$%^&*()_\\\\-+=<>?:\\\"{}|,.\\\\/;'\\\\\\\\[\\\\]·~！@#￥%……&*（）——\\\\-+={}|《》？：“”【】、；‘’，。、])";
+
+		if (!password.matches(regNumber)) {
+			System.out.println("需要包含数字");
+		} else if (!password.matches(regLowercase)) {
+			System.out.println("需要包含小写字母");
+		} else if (!password.matches(regUppercase)) {
+			System.out.println("需要包含大写字母");
+		} else if (!password.matches(regCharacter)) {
+			System.out.println("需要包含特殊字符");
+		} else {
+			System.out.println("没有问题！");
+		}
 	}
 
 //	@Autowired

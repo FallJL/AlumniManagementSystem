@@ -1,0 +1,92 @@
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/ams_basic?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false
+      username: root
+      password: 123456
+      initial-size: 10
+      max-active: 100
+      min-idle: 10
+      max-wait: 60000
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      #Oracle需要打开注释
+      #validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+#        login-username: admin
+#        login-password: admin
+      filter:
+        stat:
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: true
+          enabled: true
+          file: /DataBackup/stat.txt
+          connection-stack-trace-enable:  true
+
+        wall:
+          config:
+            multi-statement-allow: true
+        log4j2:
+          statement-executable-sql-log-enable: true
+
+
+#  cloud:
+#    nacos:
+#      discovery:
+#        server-addr: 192.168.1.125:8849
+#      config:
+#        server-addr: 192.168.1.125:8849
+#  application:
+#    name: ams-basic
+  mail:
+    host: smtp.qq.com #邮箱服务器地址
+    port: 587
+    username: 1796899275@qq.com #用户名
+    password: fjcgdkinwttebcea  #授权码
+    properties:
+      mail:
+        smtp:
+          timeout: 5000
+          connectiontimeout: 5000
+          writetimeout: 5000
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          socketFactory.class: javax.net.ssl.SSLSocketFactory
+  jackson:
+    date-format: yyyy-MM-dd
+    time-zone: GMT+8
+  redis:
+    host: localhost
+    port: 6379
+    password: scuamshgb418
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  global-config:
+    db-config:
+      id-type: auto
+
+server:
+  port: 8000
+logging:
+  level:
+    com.scu.ams.basic: debug
+
+    com.scu.ams: debug
+file-upload-path: ./ams-basic/src/main/java/com/scu/ams/basic/file
+
+shiro:
+  enabled: true
+  annotations:
+    enabled: true

@@ -72,6 +72,10 @@ public interface AlumnusBasicService extends IService<AlumnusBasicEntity> {
 
     void cover(AlumnusBasicEntity alumnusBasic);
 
+    Integer getStatusById(String aluId);
+
+    int selectStatusById(Long id);
+
 
 //    PageUtils listRandom(Map<String, Object> params);
 

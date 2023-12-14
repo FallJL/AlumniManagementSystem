@@ -15,8 +15,8 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 @Service
 public class DatabaseBackupService {
-    private static final String DB_HOST = "192.168.1.141";
-    private static final String DB_PORT = "13306";
+    private static final String DB_HOST = "localhost";
+    private static final String DB_PORT = "3306";
     private static final String DB_NAME = "ams_basic";
     private static final String DB_USERNAME = "root";
     private static final String DB_PASSWORD = "123456";

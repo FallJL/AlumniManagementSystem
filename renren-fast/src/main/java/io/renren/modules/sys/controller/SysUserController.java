@@ -78,7 +78,30 @@ public class SysUserController extends AbstractController {
 	@SysLog("修改密码")
 	@PostMapping("/password")
 	public R password(@RequestBody PasswordForm form){
-		Assert.isBlank(form.getNewPassword(), "新密码不为能空");
+		Assert.isBlank(form.getNewPassword(), "新密码不能为空");
+
+		String rawNewPassword = form.getNewPassword();
+		// 密码长度在8到20个字符之间
+		if (rawNewPassword.length() < 8 || rawNewPassword.length() > 20) {
+			return R.error("新密码长度需要在8到20个字符之间");
+		}
+		// 是否包含一位数字
+		String regNumber = ".*\\d+.*";
+		// 是否包含一位小写字母
+		String regLowercase = ".*[a-z]+.*";
+		// 是否包含一位大写字母
+		String regUppercase = ".*[A-Z]+.*";
+		// 是否包含一位特殊字符
+		String regCharacter = ".*[^a-zA-Z0-9]+.*";
+		if (!rawNewPassword.matches(regNumber)) {
+			return R.error("新密码需要包含数字");
+		} else if (!rawNewPassword.matches(regLowercase)) {
+			return R.error("新密码需要包含小写字母");
+		} else if (!rawNewPassword.matches(regUppercase)) {
+			return R.error("新密码需要包含大写字母");
+		} else if (!rawNewPassword.matches(regCharacter)) {
+			return R.error("新密码需要包含特殊字符");
+		}
 
 		//sha256加密
 		String password = new Sha256Hash(form.getPassword(), getUser().getSalt()).toHex();

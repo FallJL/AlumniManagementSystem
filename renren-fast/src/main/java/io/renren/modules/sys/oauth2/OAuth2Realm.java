@@ -41,7 +41,7 @@ public class OAuth2Realm extends AuthorizingRealm {
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        System.out.println("授权(验证权限时调用)");
+        // System.out.println("授权(验证权限时调用)");
         SysUserEntity user = (SysUserEntity)principals.getPrimaryPrincipal();
         Long userId = user.getUserId();
 
@@ -58,7 +58,7 @@ public class OAuth2Realm extends AuthorizingRealm {
      */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-        System.out.println("认证(登录时调用)");
+//        System.out.println("认证(登录时调用)");
         String accessToken = (String) token.getPrincipal();
 
         //根据accessToken，查询用户信息

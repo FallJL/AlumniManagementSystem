@@ -118,6 +118,18 @@ public class SysFeignController {
     }
 
     /**
+     * 禁用或启用某个校友数据
+     */
+    @PostMapping("/disable-or-enable")
+    @RequiresPermissions("sys:user:list")
+    public R disableOrEnable(@RequestBody AlumnusInfoDTO alumnusInfoDTO){
+        // 判断有无token密钥，若有：说明是openfeign调用的，合法
+        alumnusInfoDTO.setFeignToken(feignToken);
+
+        return basicFeignService.disableOrEnable(alumnusInfoDTO);
+    }
+
+    /**
      * 导入数据库
      */
     @PostMapping ("/inport")
