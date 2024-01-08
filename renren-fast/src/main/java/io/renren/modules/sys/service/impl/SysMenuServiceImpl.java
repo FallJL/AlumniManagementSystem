@@ -59,14 +59,15 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuDao, SysMenuEntity> i
 
 	@Override
 	public List<SysMenuEntity> getUserMenuList(Long userId) {
-		//系统管理员，拥有最高权限
-		if(userId == Constant.SUPER_ADMIN){
-			return getMenuList(null);
-		}
-
-		//用户菜单列表
-		List<Long> menuIdList = sysUserService.queryAllMenuId(userId);
-		return getMenuList(menuIdList);
+		return getMenuList(null);
+//		//系统管理员，拥有最高权限
+//		if(userId == Constant.SUPER_ADMIN){
+//			return getMenuList(null);
+//		}
+//
+//		//用户菜单列表
+//		List<Long> menuIdList = sysUserService.queryAllMenuId(userId);
+//		return getMenuList(menuIdList);
 	}
 
 	/**
@@ -77,10 +78,12 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuDao, SysMenuEntity> i
 	private List<SysMenuEntity> getMenuList(List<Long> menuIdList) {
 		// 查询拥有的所有菜单
 		List<SysMenuEntity> menus = this.baseMapper.selectList(new QueryWrapper<SysMenuEntity>()
-				.gt("menu_id", 30)
-				.notIn("menu_id", 38,39,40)
-				.in(Objects.nonNull(menuIdList), "menu_id", menuIdList).in("type", 0, 1));
+//				.gt("menu_id", -1)
+				.notIn("menu_id", 38,39,40, 3,4,5,6,27,30)
+				.in(Objects.nonNull(menuIdList), "menu_id", menuIdList)
+				.in("type", 0, 1));
 		//查询完成 对此list直接排序
+//		List<SysMenuEntity> menus = this.baseMapper.selectList(new QueryWrapper<SysMenuEntity>().notIn("menu_id", 38,39,40));
 		Collections.sort(menus);
 
 		// 将id和菜单绑定
