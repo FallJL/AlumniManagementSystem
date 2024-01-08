@@ -96,7 +96,7 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
 
     @Override
     public void sendBirthDayMail(Long id) {
-        String fromEmail = "1796899275@qq.com";
+        String fromEmail = "874085669@qq.com";
         String subject = "生日快乐";
         String messageText = "祝您生日快乐！";
         String email = alumnusBasicService.getById(id).getEmail();
@@ -110,8 +110,8 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
 
     @Override
     public void sendInformMail(Long[] ids, String information) {
-        String fromEmail = "1796899275@qq.com";
-        String subject = "四川大学校友通知！";
+        String fromEmail = "874085669@qq.com";
+        String subject = "四川大学化学与工程学院校友通知！";
 
         List<String> toEmails = new ArrayList<>();
         for (Long id : ids) {
@@ -387,14 +387,19 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
 
     @Override
     public int selectById(AlumnusBasicEntity alumnusBasicEntity) {
+        int exist = 1;
         String aluId = alumnusBasicEntity.getAluId();
-        QueryWrapper<AlumnusBasicEntity> wrapper = new QueryWrapper<>();
-        wrapper.eq("alu_id", aluId);
-        int count = this.baseMapper.selectCount(wrapper);
-        int exist = 1;//如果数据库里面存在则返回1，数据库里不存在返回0
-        System.out.println(count);
-        if(count == 0){
+        if(aluId == null || aluId.equals("")){
             exist = 0;
+        }
+        else {
+            QueryWrapper<AlumnusBasicEntity> wrapper = new QueryWrapper<>();
+            wrapper.eq("alu_id", aluId);
+            int count = this.baseMapper.selectCount(wrapper);
+//            System.out.println(count);
+            if(count == 0){
+                exist = 0;
+            }
         }
         return exist;
     }
@@ -431,7 +436,7 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
 
     @Override
     public void sendBirthDayMails(Long[] ids) {
-        String fromEmail = "1796899275@qq.com";
+        String fromEmail = "874085669@qq.com";
         String subject = "生日快乐";
         String messageText = "祝您生日快乐！";
         List<String> toEmails = new ArrayList<>();

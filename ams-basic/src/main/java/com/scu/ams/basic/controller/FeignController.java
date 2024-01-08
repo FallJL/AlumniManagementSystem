@@ -215,8 +215,13 @@ public class FeignController {
         }
 
         AlumnusBasicEntity alumnusBasicEntity = new AlumnusBasicEntity();
-        BeanUtils.copyProperties(alumnusImportDTO, alumnusBasicEntity);
-        int exist = alumnusBasicService.selectById(alumnusBasicEntity);
+        int exist;
+        if(alumnusImportDTO.getAluId() == null ||  alumnusImportDTO.getAluId().equals("")){
+            exist = 0;
+        }else{
+            BeanUtils.copyProperties(alumnusImportDTO, alumnusBasicEntity);
+            exist = alumnusBasicService.selectById(alumnusBasicEntity);
+        }
         return R.ok().put("exist",exist);
     }
 
