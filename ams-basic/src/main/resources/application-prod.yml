@@ -39,20 +39,19 @@ spring:
         log4j2:
           statement-executable-sql-log-enable: true
 
-
 #  cloud:
 #    nacos:
 #      discovery:
-#        server-addr: 192.168.1.125:8849
+#        server-addr: 202.115.43.57:8848
 #      config:
-#        server-addr: 192.168.1.125:8849
+#        server-addr: 202.115.43.57:8848
 #  application:
 #    name: ams-basic
   mail:
     host: smtp.qq.com #邮箱服务器地址
     port: 587
     username: 874085669@qq.com #用户名
-    password: aslfwptlcnjcbfgh  #授权码
+    password: your_password  #授权码，请看基本说明文档
     properties:
       mail:
         smtp:

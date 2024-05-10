@@ -10,6 +10,7 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -109,6 +110,7 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
     }
 
     @Override
+    @Async("taskExecutor") // 使用异步线程/线程池优化
     public void sendInformMail(Long[] ids, String information) {
         String fromEmail = "874085669@qq.com";
         String subject = "四川大学化学与工程学院校友通知！";
@@ -516,7 +518,7 @@ public class AlumnusBasicServiceImpl extends ServiceImpl<AlumnusBasicDao, Alumnu
 
         try {
             // 建立数据库连接
-            Connection connection = DriverManager.getConnection("jdbc:mysql://192.168.1.125:13306/ams_basic?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai", "root", "123456");
+            Connection connection = DriverManager.getConnection("jdbc:mysql://202.115.43.57:3306/ams_basic?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai", "root", "123456");
 
             // 执行查询语句
             String sql = "SELECT enterprise_property, COUNT(*) AS count FROM alumnus_basic GROUP BY enterprise_property";

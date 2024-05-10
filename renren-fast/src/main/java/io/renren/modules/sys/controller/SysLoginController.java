@@ -72,7 +72,7 @@ public class SysLoginController extends AbstractController {
 	 * 登录
 	 */
 	@PostMapping("/sys/login")
-	public Map<String, Object> login(@RequestBody SysLoginForm form)throws IOException {
+	public Map<String, Object> login(@RequestBody SysLoginForm form) throws IOException {
 		boolean captcha = sysCaptchaService.validate(form.getUuid(), form.getCaptcha());
 		if(!captcha){
 			return R.error("验证码不正确");
@@ -101,12 +101,10 @@ public class SysLoginController extends AbstractController {
 				long sec=second-t*60;
 				if(sec==0){
 					return R.error("登录验证失败次数过多，请" + t + "分钟后再试！");
-				}
-				else{
+				} else{
 					return R.error("登录验证失败次数过多，请" + t + "分"+sec+"秒后再试！");
 				}
-			}
-			else {
+			} else {
 				return R.error("登录验证失败次数过多，请" + second + "秒后再试！");
 			}
 		}
@@ -151,7 +149,7 @@ public class SysLoginController extends AbstractController {
 			Long expiration = stringRedisTemplate.getExpire(key, TimeUnit.SECONDS);
 			Integer count = Integer.valueOf(value);
 			if (expiration > 0) {
-			// System.out.println("The TTL of the key is: " + expiration);
+				// System.out.println("The TTL of the key is: " + expiration);
 				stringRedisTemplate.opsForValue().set(key, Integer.toString(count + 1));
 				stringRedisTemplate.expire(key, expiration, TimeUnit.SECONDS);
 			}

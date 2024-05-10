@@ -7,6 +7,7 @@ import com.scu.ams.basic.service.AuditDetailService;
 import com.scu.ams.basic.vo.*;
 import com.scu.common.utils.PageUtils;
 import com.scu.common.utils.R;
+// import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +18,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static com.scu.ams.basic.config.MQConfig.*;
+
 /**
  * 专门用来接受openfeign调用的controller，主要是 管理员 访问校友信息的请求
  */
@@ -24,6 +27,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("basic/feign")
 public class FeignController {
+//    @Autowired
+//    private RabbitTemplate rabbitTemplate;
     @Autowired
     private AlumnusBasicService alumnusBasicService;
     @Autowired
@@ -387,7 +392,9 @@ public class FeignController {
 
         Long[] ids = dto.getIds();
         String information = dto.getInformation();
-        alumnusBasicService.sendInformMail(ids, information);
+        EmailInfoVo emailInfoVo = new EmailInfoVo(ids, information);
+        alumnusBasicService.sendInformMail(ids, information); // 普通方式/异步线程(线程池)方法发送邮件
+//        rabbitTemplate.convertAndSend(EMAIL_ROUTE_EXCHANGE, EMAIL_NOTIFICATION, emailInfoVo); // RabbitMQ方式发送邮件
         return R.ok();
     }
 }

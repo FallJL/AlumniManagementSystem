@@ -45,7 +45,7 @@ spring:
 #  cloud:
 #    nacos:
 #      discovery:
-#        server-addr: 192.168.1.125:8849
+#        server-addr: 202.115.43.57:8848
 #  resources:
 #    add-mappings: false
 
@@ -69,7 +69,6 @@ mybatis-plus:
     cache-enabled: false
     call-setters-on-nulls: true
     jdbc-type-for-null: 'null'
-
 
 renren:
   redis:
