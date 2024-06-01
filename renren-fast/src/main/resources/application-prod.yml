@@ -36,6 +36,8 @@ spring:
         host: localhost
         port: 6379
         password: scuamshgb418
+#swagger:
+#    enabled: false # 生产环境中禁用swagger
 
 
 ##多数据源的配置

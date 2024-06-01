@@ -15,6 +15,23 @@
 		<relativePath/> <!-- 记得加上这一行，不然maven无法下载插件 -->
 	</parent>
 
+	<!--生产环境下排除resources下static中的所有内容，从而禁用swagger的静态ui文件-->
+<!--	<profiles>-->
+<!--		<profile>-->
+<!--			<id>prod</id>-->
+<!--			<build>-->
+<!--				<resources>-->
+<!--					<resource>-->
+<!--						<directory>src/main/resources</directory>-->
+<!--						<excludes>-->
+<!--							<exclude>static/**</exclude>-->
+<!--						</excludes>-->
+<!--					</resource>-->
+<!--				</resources>-->
+<!--			</build>-->
+<!--		</profile>-->
+<!--	</profiles>-->
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -215,16 +232,18 @@
 			<artifactId>kaptcha</artifactId>
 			<version>${kaptcha.version}</version>
 		</dependency>
+		<!--swagger-->
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger2</artifactId>
 			<version>${swagger.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger-ui</artifactId>
-			<version>${swagger.version}</version>
-		</dependency>
+		<!--排除swagger-ui-->
+<!--		<dependency>-->
+<!--			<groupId>io.springfox</groupId>-->
+<!--			<artifactId>springfox-swagger-ui</artifactId>-->
+<!--			<version>${swagger.version}</version>-->
+<!--		</dependency>-->
 		<dependency>
 			<groupId>com.qiniu</groupId>
 			<artifactId>qiniu-java-sdk</artifactId>
